@@ -1,5 +1,4 @@
-"""EbbinghausAnywhere URL Configuration
-
+"""
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
 Examples:
@@ -14,8 +13,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
+from django.conf.urls import include
+from django.views.generic import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 ]
+# Use include() to add paths from the catalog application
+urlpatterns += [
+    path('EAW/', include('EAW.urls')),
+    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),  # 添加登录视图
+]
+urlpatterns += [
+    path('', RedirectView.as_view(url='/EAW/')),
+]
+# Use static() to add url mapping to serve static files during development (only)
+
+#from Ebbinghaus import settings
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

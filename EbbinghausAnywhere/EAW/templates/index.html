@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.username }}!</h1>
+    <h2>Your Database Summary</h2>
+
+    <p><strong>Total Items:</strong> {{ total_items }}</p>
+
+    <h3>Items by Category</h3>
+    <ul>
+        {% for category, count in category_counts.items %}
+            <li><strong>{{ category }}:</strong> {{ count }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

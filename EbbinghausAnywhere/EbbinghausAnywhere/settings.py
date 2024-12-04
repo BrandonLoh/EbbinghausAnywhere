@@ -123,5 +123,13 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = '/EAW/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'  # 可选：用户登出后的重定向
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # 默认认证后端
+)
+
+# 登录和退出后的跳转路径
+LOGIN_URL = '/accounts/login/'  # 用户未登录时，跳转的登录页面
+LOGOUT_URL = '/accounts/logout/'  # 退出登录后跳转的页面
+LOGIN_REDIRECT_URL = '/'  # 登录成功后跳转的页面
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -20,19 +20,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('', include('EAW.urls')),  # 直接挂载 EAW.urls，不再加 accounts/ 前缀
 ]
-# Use include() to add paths from the catalog application
-urlpatterns += [
-    path('EAW/', include('EAW.urls')),
-    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),  # 添加登录视图
-]
-urlpatterns += [
-    path('', RedirectView.as_view(url='/EAW/')),
-]
-# Use static() to add url mapping to serve static files during development (only)
 
-#from Ebbinghaus import settings
-
+# 静态文件支持
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

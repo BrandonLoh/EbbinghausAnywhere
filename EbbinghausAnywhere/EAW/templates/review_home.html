@@ -3,7 +3,7 @@
 {% block content-left %}
 <h3>日积月累</h3>
 
-<form action="" method="post" enctype="multipart/form-data" autocomplete="off">
+<form id="reviewForm" action="" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return redirectToReview();">
     {% csrf_token %}
     <div class="row">
         <div class="input-group mb-3 mt-3">
@@ -29,5 +29,25 @@
             defaultDate: today        // 将当天日期设置为默认值
         });
     });
+
+    // 表单提交时跳转到指定页面
+    function redirectToReview() {
+        // 获取用户选择的日期
+        const reviewDate = document.getElementById("id_review_date").value;
+
+        // 检查日期是否有效
+        if (!reviewDate) {
+            alert("请选择一个有效的日期！");
+            return false; // 阻止表单提交
+        }
+
+        // 跳转到指定的页面
+        const targetUrl = `http://127.0.0.1:8000/review/${reviewDate}`;
+        window.location.href = targetUrl;
+
+        // 阻止默认表单提交
+        return false;
+    }
 </script>
 {% endblock %}
+

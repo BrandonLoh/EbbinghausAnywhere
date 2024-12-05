@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+    <h1>Search Results</h1>
+
+    {% if word %}
+        <p>{{ word }}</p> <!-- 显示提示信息 -->
+    {% endif %}
+
+    {% if query.exists %}
+        <ul>
+            {% for item in query %}
+                <li>
+                    <a href="{% url 'item-detail' item.id %}">{{ item.item }}</a>
+                    - {{ item.content|truncatewords:10 }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No items found.</p>
+    {% endif %}
+
+    <a href="{% url 'search' %}">Search Again</a> |
+    <a href="{% url 'item-list' %}">Back to Item List</a>
+</body>
+</html>

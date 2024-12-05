@@ -71,7 +71,7 @@ class Item(models.Model):
         """
         #print (str(self.id),year,month,day)
         #print (reverse('review-detail', args=[year, month, day, str(self.id)]))
-        return reverse('review-detail', args=[year, month, day, str(self.id)])
+        return reverse('review-view', args=[year, month, day, str(self.id)])
     class Meta:
         unique_together = ('user', 'item')  # 确保每个用户的单词库中单词不重复
 

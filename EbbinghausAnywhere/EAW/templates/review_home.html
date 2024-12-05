@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content-left %}
+<h3>日积月累</h3>
+
+<form action="" method="post" enctype="multipart/form-data" autocomplete="off">
+    {% csrf_token %}
+    <div class="row">
+        <div class="input-group mb-3 mt-3">
+            <label for="id_review_date" class="form-label">选择日期：</label>
+            <input type="text" id="id_review_date" name="review_date" class="form-control" />
+            <input type="submit" value="Review" class="btn btn-secondary btn-sm" />
+        </div>
+    </div>
+</form>
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 获取当天日期并格式化为 YYYY-MM-DD
+        const today = new Date().toISOString().split('T')[0];
+        console.log("当前日期为：", today); // 控制台日志确认
+
+        // 初始化 Flatpickr
+        flatpickr("#id_review_date", {
+            dateFormat: "Y-m-d",      // 设置日期格式
+            defaultDate: today        // 将当天日期设置为默认值
+        });
+    });
+</script>
+{% endblock %}

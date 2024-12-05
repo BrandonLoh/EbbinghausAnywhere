@@ -1,0 +1,149 @@
+{% extends "base_generic.html" %}
+
+{% block content-left %}
+<script>
+  const feedbackUrls = {
+    yes: '/review-feedback/yes/',
+    no: '/review-feedback/no/',
+    reset: '/review-feedback/reset/',
+  };
+
+  // 通用函数：POST 数据到后端
+  function postData(url, data, callback) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        callback(response);
+      }
+    };
+    xhr.send(data);
+  }
+
+  // 更新整行文字样式
+  function updateRowStyle(row, action, mastery) {
+    // 移除整行文字的旧样式
+    row.querySelectorAll('td').forEach(cell => {
+      cell.classList.remove('text-success', 'text-danger', 'text-warning', 'fw-bold');
+    });
+
+    // 更新掌握程度文字
+    const proficiencyCell = row.querySelector('.proficiency-cell');
+    proficiencyCell.textContent = mastery;
+
+    // 根据操作更新整行文字样式
+    const cells = row.querySelectorAll('td');
+    if (action === 'yes') {
+      cells.forEach(cell => cell.classList.add('text-success')); // 文字变绿色
+    } else if (action === 'no') {
+      cells.forEach(cell => {
+        cell.classList.add('text-danger', 'fw-bold'); // 文字变红且加粗
+      });
+    } else if (action === 'reset') {
+      cells.forEach(cell => {
+        cell.classList.add('text-warning', 'fw-bold'); // 文字变黄色且加粗
+      });
+    }
+  }
+
+  // 通用函数：处理按钮点击事件
+  function handleButtonClick(event) {
+    const button = event.target;
+    const wordId = button.getAttribute('data-id');
+    const action = button.getAttribute('data-action');
+    const row = document.getElementById(`td${wordId}`);
+    const data = JSON.stringify({ id: wordId, date: '{{ reviewdate }}' });
+
+    // 发送请求到后端
+    postData(feedbackUrls[action], data, (response) => {
+      if (response.success) {
+        updateRowStyle(row, action, response.mastery); // 更新整行样式和掌握程度
+      } else {
+        console.error("Error:", response.message);
+        alert("操作失败：" + response.message); // 提示错误
+      }
+    });
+  }
+
+  // 等 DOM 加载完成后绑定事件
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.feedback-btn').forEach(button => {
+      button.addEventListener('click', handleButtonClick);
+    });
+  });
+</script>
+
+<div class="container-fluid p-0">
+  <div class="card w-100" style="max-width: 1200px; width: 100%;">
+    <div class="card-header">
+      <a class="btn" data-bs-toggle="collapse" href="#collapseTitle">
+        <iframe id="id_frame" name="hideIframe1" title="title_Iframe" style="display:none;"></iframe>
+        {{ reviewdate }}需要复习下列内容：
+      </a>
+    </div>
+    <div class="card-body p-1">
+      <div class="collapse show" id="collapseTitle">
+        {% for key, value in output.items %}
+        <table class="table table-condensed table-hover w-100 mx-auto">
+          <thead data-bs-toggle="collapse" href="#collapse{{ key }}">
+            <tr>
+              <th width="50%">{{ key }} ({{ value | length }})</th>
+              <th width="25%">复习周期</th>
+              <th width="25%">掌握程度</th>
+            </tr>
+          </thead>
+          <tbody id="collapse{{ key }}" class="collapse show" data-bs-parent="#collapseTitle">
+            {% for word in value %}
+            <tr id="td{{ word.1.id }}" data-bs-toggle="modal" data-bs-target="#myModal{{ word.1.id }}">
+              <td>{{ word.1.item }}</td>
+              <td>第 {{ word.0 }} 天</td>
+              <td class="proficiency-cell">{{ word.1.get_proficiency_display }}</td>
+            </tr>
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal{{ word.1.id }}" tabindex="-1" aria-labelledby="myModalLabel{{ word.1.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+
+                  <!-- Modal Header -->
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel{{ word.1.id }}">
+                      <a href="/admin/EAW/item/{{ word.1.id }}/change/">{{ word.1.item }}</a>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+
+                  <!-- Modal Body -->
+                  <div class="modal-body">
+                    <p><strong>掌握程度:</strong> {{ word.1.get_proficiency_display }}</p>
+                    <p><strong>类型:</strong> {{ word.1.category.name }}</p>
+                    <p><strong>学习日期：</strong>{{ word.1.inputDate }}</p>
+                    {% autoescape off %}
+                    <p style="white-space: pre-line"><strong>内容：</strong><br>{{ word.1.content|safe }}</p>
+                    {% endautoescape %}
+                  </div>
+
+                  <!-- Modal Footer -->
+                  <div class="modal-footer">
+                    <form enctype="multipart/form-data" method="post" onsubmit="return false">
+                      {% csrf_token %}
+                      <button class="btn btn-success feedback-btn" data-id="{{ word.1.id }}" data-action="yes">YES</button>
+                      <button class="btn btn-danger feedback-btn" data-id="{{ word.1.id }}" data-action="no">NO</button>
+                      <button class="btn btn-warning feedback-btn" data-id="{{ word.1.id }}" data-action="reset">RESET</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

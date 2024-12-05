@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search</title>
+</head>
+<body>
+    <h1>Search Items</h1>
+    
+    <!-- 搜索表单 -->
+    <form method="get" action="{% url 'search' %}">
+        <input type="text" name="q" placeholder="Enter keyword" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <a href="{% url 'item-list' %}">Back to Item List</a>
+</body>
+</html>

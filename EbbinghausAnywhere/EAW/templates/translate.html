@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>百度翻译测试</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>百度翻译接口测试</h2>
+
+        <form id="translateForm">
+            <div class="form-group">
+                <label for="query">请输入单词:</label>
+                <input type="text" class="form-control" id="query" name="query" placeholder="Enter word or phrase">
+            </div>
+            <button type="submit" class="btn btn-primary">翻译</button>
+        </form>
+
+        <div id="result" class="mt-4">
+            <h4>翻译结果</h4>
+            <div id="translation"></div>
+            <div id="audio" class="mt-2"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // 监听表单提交
+        $('#translateForm').on('submit', function(event) {
+            event.preventDefault();
+
+            // 获取输入的查询词
+            const query = $('#query').val().trim();
+            if (!query) {
+                alert('请输入单词!');
+                return;
+            }
+
+            // 调用后台翻译接口
+            $.ajax({
+                url: '/translate/',  // 假设翻译接口路径为 '/translate/'
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ 'query': query }),
+                success: function(response) {
+                    if (response.success) {
+                        displayTranslation(response.result);
+                    } else {
+                        $('#translation').text('翻译失败: ' + response.message);
+                        $('#audio').empty();
+                    }
+                },
+                error: function() {
+                    $('#translation').text('请求失败，请稍后重试。');
+                    $('#audio').empty();
+                }
+            });
+        });
+
+        // 展示翻译结果并处理换行符
+        function displayTranslation(result) {
+            const translationDiv = $('#translation');
+            translationDiv.empty();  // 清空之前的翻译结果
+
+            if (result) {
+                // 将翻译结果中的 "\n" 替换为 "<br>"
+                result.forEach(item => {
+                    if (item) {
+                        // 将每个项中的换行符替换为 <br> 标签
+                        const formattedItem = item.replace(/\n/g, '<br>');
+                        translationDiv.append('<p>' + formattedItem + '</p>');
+                    }
+                });
+
+                // 如果有语音链接（src_tts），显示音频播放
+                const audioDiv = $('#audio');
+                const srcTts = result[0];  // 假设 src_tts 是结果的第一个项
+                if (srcTts) {
+                    audioDiv.html(`
+                        <h5>语音播放:</h5>
+                        <audio controls>
+                            <source src="${srcTts}" type="audio/mpeg">
+                            您的浏览器不支持音频播放。
+                        </audio>
+                    `);
+                }
+            } else {
+                translationDiv.text('无翻译结果');
+                $('#audio').empty();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -27,6 +27,10 @@ import csv
 from time import sleep
 import logging
 import re
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .translate import baidu_translate, parse_json_to_string
+
 logger = logging.getLogger(__name__)
 
 # Create your views here.
@@ -294,4 +298,40 @@ def ReviewFeedbackReset(request):
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)})
 
+#BAIDU API调试页面
+def translate_test(request):
+    return render(request, 'translate.html')  # 渲染index.html页面
+@csrf_exempt
+def translate(request):
+    if request.method == 'POST':
+        try:
+            # 获取前端传来的查询词
+            data = json.loads(request.body)
+            query = data.get('query', '')
 
+            if not query:
+                return JsonResponse({'success': False, 'message': 'No query provided'})
+
+            # 调用百度翻译接口
+            result = baidu_translate(query)
+            
+            if result:
+                return JsonResponse({'success': True, 'result': result})
+            else:
+                return JsonResponse({'success': False, 'message': 'Translation failed'})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+def check_api_keys_view(request):
+    """
+    检查是否配置了百度 API 密钥
+    :return: JsonResponse
+    """
+    if check_api_keys():
+        return JsonResponse({"success": True, "message": "百度 API 密钥已配置"})
+    else:
+        return JsonResponse({"success": False, "message": "百度 API 密钥未配置"}, status=400)
+    
+    

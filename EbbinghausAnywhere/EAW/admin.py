@@ -1,7 +1,14 @@
 from django.contrib import admin
+from django.urls import path
 from django.utils.translation import gettext_lazy as _
 from .models import Category, Item, ReviewDay
 from .forms import CategoryAdminForm, ItemAdminForm, ReviewDayAdminForm
+from django.core.exceptions import ValidationError
+from django.contrib import messages
+from django.utils.html import format_html
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .translate import baidu_translate
 
 class BaseAdmin(admin.ModelAdmin):
     """
@@ -79,12 +86,55 @@ class CategoryAdmin(BaseAdmin):
         if request.user.is_superuser:
             return qs  # 超级用户可以看到所有类别
         return qs.filter(user=request.user)  # 普通用户只能看到自己创建的类别
+    
+    def save_model(self, request, obj, form, change):
+        """
+        自定义保存逻辑，阻止非法操作。
+        """
+        if change and obj.is_default and 'name' in form.changed_data:
+            messages.error(request, "Cannot modify the name of the default category.")
+            return  # 中断保存操作
+        super().save_model(request, obj, form, change)
+
+    def delete_model(self, request, obj):
+        """
+        自定义删除逻辑，阻止删除默认分类。
+        """
+        if obj.is_default:
+            messages.error(request, "Cannot delete the default category.")
+            return  # 中断删除操作
+        super().delete_model(request, obj)
+
+    def response_change(self, request, obj):
+        """
+        自定义修改后的响应，避免阻止字段修改时显示保存成功的提示。
+        """
+        # 检测是否试图修改默认分类的名称
+        if obj.is_default and 'name' in request.POST:
+            submitted_name = request.POST.get('name', '').strip()
+            if submitted_name != obj.name:
+                # 阻止保存，添加错误消息
+                messages.error(request, "Cannot modify the name of the default category.")
+                # 重新渲染页面，无保存成功提示
+                return self.render_change_form(
+                    request,
+                    context=self.get_changeform_initial_data(request, obj),
+                    obj=obj,
+                    form_url=None,
+                    add=False,
+                    change=True,
+                )
+
+        # 对于合法操作，调用父类方法，显示正常提示
+        return super().response_change(request, obj)
+
 
 
 class ItemAdmin(BaseAdmin):
     form = ItemAdminForm
     list_display = ('item', 'proficiency', 'category', 'user')  # 超级用户可看到用户信息
     search_fields = ('item', 'content')  # 支持按单词和内容搜索
+    change_form_template = 'admin/item_change_form.html'  # 添加自定义模板
     def get_list_filter(self, request):
         """
         动态调整普通用户和超级用户的过滤器
@@ -115,6 +165,54 @@ class ItemAdmin(BaseAdmin):
         if not request.user.is_superuser:
             return qs.filter(user=request.user)  # 普通用户只能看到自己创建的条目
         return qs  # 超级用户可以看到所有条目
+    # 添加翻译按钮
+    def get_translate_button(self, obj):
+        if obj.category.name == "单词":
+            return format_html(
+                '<button class="button translate-button" data-id="{}">获取释义</button>',
+                obj.id
+            )
+        return "-"
+    get_translate_button.short_description = "操作"
+
+    def get_urls(self):
+        """
+        添加自定义 URL 用于处理翻译功能
+        """
+        urls = super().get_urls()
+        custom_urls = [
+            path('translate/<int:item_id>/', self.translate_item, name='translate_item'),
+        ]
+        return custom_urls + urls
+
+    def translate_item(self, request, item_id):
+        """
+        调用翻译函数并返回结果
+        """
+        item = get_object_or_404(Item, id=item_id)
+        if item.category.name != "单词":
+            return JsonResponse({"success": False, "message": "当前类别不是 '单词'，无法翻译。"})
+
+        # 调用翻译函数
+        translation_result = baidu_translate(item.item)
+        if not translation_result:
+            return JsonResponse({"success": False, "message": "翻译失败，请稍后重试。"})
+
+        # 解析结果
+        src_tts, definition = translation_result
+        current_definition = item.content or ""
+
+        # 检测是否重复
+        if definition.strip() in current_definition:
+            return JsonResponse({"success": False, "message": "释义重复，无需更新。"})
+
+        # 返回翻译结果
+        return JsonResponse({
+            "success": True,
+            "definition": definition,
+            "src_tts": src_tts
+        })
+
 
 
 class ReviewDayAdmin(BaseAdmin):

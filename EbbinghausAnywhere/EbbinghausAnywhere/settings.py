@@ -59,7 +59,7 @@ ROOT_URLCONF = "EbbinghausAnywhere.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / 'templates'],  # 确保包含全局模板路径
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

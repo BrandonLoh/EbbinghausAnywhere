@@ -31,6 +31,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .translate import baidu_translate, parse_json_to_string
 
+
 logger = logging.getLogger(__name__)
 
 # Create your views here.
@@ -56,7 +57,7 @@ def register(request):
             user.save()
 
             # 创建默认 "单词" 分类
-            Category.objects.create(user=user, name="单词", sort_order=1)
+            Category.objects.create(user=user, name="单词", sort_order=1, is_default=True)
 
             # 创建默认的复习天数
             review_days = [1, 2, 4, 7, 15, 30, 90, 180, 365]

@@ -42,14 +42,21 @@
 </script>
 {% endblock %}
 
-{% block form_top %}
-    <!-- 保留原有内容 -->
-    {{ block.super }}    
-    <div class="submit-row">
-        <!-- 在这里添加自定义按钮 -->
-        <button type="button" id="translate-btn" class="button" style="margin-left: 10px;">
-            获取释义
-        </button>
-    </div>
+{% block submit_buttons_bottom %} 
+    {% if original and original.category.name == "单词" %}    
+        {% if api_status == "available" %} 
+        <div class="submit-row" style="display: flex; align-items: center; justify-content: flex-start; gap: 10px;">
+            <!-- 在这里添加自定义按钮 -->
+            <button type="button" id="translate-btn" class="button default" style="padding: 5px 15px; line-height: 24px; height: auto;">
+                Get Translation
+            </button>
+            <!-- 说明文字 -->
+            <span style="margin-left: 10px; font-size: 14px; color: #666;">
+                支持单词和部分短语释义和发音查询，结果将附加到当前释义字段，需手动保存
+            </span>
+        </div>
+        {% endif %}
+    {% endif %}
+    {{ block.super }}  
 {% endblock %}
 

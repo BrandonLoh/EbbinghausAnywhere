@@ -8,8 +8,8 @@ from django.contrib import messages
 from django.utils.html import format_html
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from .translate import baidu_translate
-
+from .translate import baidu_translate, check_api_keys
+from django.template.response import TemplateResponse
 class BaseAdmin(admin.ModelAdmin):
     """
     自定义基类Admin，用于实现普通用户只能看到自己的条目，
@@ -212,6 +212,14 @@ class ItemAdmin(BaseAdmin):
             "definition": definition,
             "src_tts": src_tts
         })
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        # 调用 check_api_keys 检查 API 配置状态
+        api_status = "available" if check_api_keys() else "unavailable"
+
+        # 将 API 状态传入模板上下文
+        extra_context = extra_context or {}
+        extra_context['api_status'] = api_status
+        return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
 
 

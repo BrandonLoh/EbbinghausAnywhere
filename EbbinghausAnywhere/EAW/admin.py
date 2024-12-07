@@ -10,6 +10,11 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .translate import baidu_translate, check_api_keys
 from django.template.response import TemplateResponse
+import re
+import logging
+
+logger = logging.getLogger(__name__)
+
 class BaseAdmin(admin.ModelAdmin):
     """
     自定义基类Admin，用于实现普通用户只能看到自己的条目，
@@ -135,21 +140,14 @@ class ItemAdmin(BaseAdmin):
     list_display = ('item', 'proficiency', 'category', 'user')  # 超级用户可看到用户信息
     search_fields = ('item', 'content')  # 支持按单词和内容搜索
     change_form_template = 'admin/item_change_form.html'  # 添加自定义模板
+
     def get_list_filter(self, request):
-        """
-        动态调整普通用户和超级用户的过滤器
-        """
         filters = ['proficiency', UserCategoryFilter]  # 默认只显示类别和掌握程度的过滤器
         if request.user.is_superuser:
-            # 超级用户可以根据 `user` 过滤
-            filters.append('user')
+            filters.append('user')  # 超级用户可以根据 `user` 过滤
         return filters
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """
-        普通用户新建/修改条目时，只能选择自己创建的类别。
-        超级用户可以选择所有用户的类别。
-        """
         if db_field.name == "category":
             if not request.user.is_superuser:
                 kwargs["queryset"] = Category.objects.filter(user=request.user)  # 普通用户只能看到自己的类别
@@ -158,13 +156,11 @@ class ItemAdmin(BaseAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
-        """
-        限制普通用户在列表中只看到自己创建的类别，超级用户可以看到所有条目。
-        """
         qs = super().get_queryset(request)
         if not request.user.is_superuser:
             return qs.filter(user=request.user)  # 普通用户只能看到自己创建的条目
         return qs  # 超级用户可以看到所有条目
+
     # 添加翻译按钮
     def get_translate_button(self, obj):
         if obj.category.name == "单词":
@@ -173,53 +169,107 @@ class ItemAdmin(BaseAdmin):
                 obj.id
             )
         return "-"
+
     get_translate_button.short_description = "操作"
 
     def get_urls(self):
-        """
-        添加自定义 URL 用于处理翻译功能
-        """
         urls = super().get_urls()
         custom_urls = [
             path('translate/<int:item_id>/', self.translate_item, name='translate_item'),
         ]
         return custom_urls + urls
+    
+    @staticmethod
+    def clean_definition(definition):
+        """
+        清洗并拆解释义，去掉无关符号并分词。
+        """
+        if not definition:
+            return []
+        
+        # 移除非字母数字字符（比如标点符号等），并统一转换为小写
+        cleaned_definition = re.sub(r'[^\w\s]', '', definition.lower())
+        
+        # 将释义按分号拆分成单词/短语
+        return set(cleaned_definition.split(';'))
 
     def translate_item(self, request, item_id):
         """
         调用翻译函数并返回结果
         """
+        logger.debug(f"Received item_id: {item_id}")
         item = get_object_or_404(Item, id=item_id)
         if item.category.name != "单词":
             return JsonResponse({"success": False, "message": "当前类别不是 '单词'，无法翻译。"})
 
         # 调用翻译函数
         translation_result = baidu_translate(item.item)
+        # 判断翻译是否成功
         if not translation_result:
             return JsonResponse({"success": False, "message": "翻译失败，请稍后重试。"})
 
+        # 如果 parts_and_means 和 simple_meaning 都为空，则认为翻译失败
+        if not translation_result.get('parts_and_means') and not translation_result.get('simple_meaning'):
+            return JsonResponse({"success": False, "message": "翻译失败，请稍后重试。"})
         # 解析结果
-        src_tts, definition = translation_result
-        current_definition = item.content or ""
+        phonetic = translation_result.get('phonetic', [])
+        phonetic_am = phonetic[1] if len(phonetic) > 1 else None  # 美式音标
+        phonetic_en = phonetic[0] if len(phonetic) > 0 else None  # 英式音标
+        src_tts = translation_result.get('src_tts', '')
+        # 获取简明释义和词根释义
+        simple_meaning = translation_result.get('simple_meaning', [])
+        parts_and_means = translation_result.get('parts_and_means', [])
+        # 初始化 new_definition，防止访问未定义的变量
+        new_definition = ""
 
-        # 检测是否重复
-        if definition.strip() in current_definition:
+
+
+        # 如果有 parts_and_means，优先使用它
+        if parts_and_means:
+            new_definition = "\n".join([str(item) for item in parts_and_means]).strip()  # 获取“释义:”之后的部分
+
+        # 如果没有 parts_and_means，才使用 simple_meaning
+        if not new_definition and simple_meaning:
+            new_definition = simple_meaning[0]  # 如果有简明释义，优先使用简明释义
+
+
+        # 清洗并拆解现有内容和新内容
+        current_definition = self.clean_definition(item.content or "")  # 调用静态方法
+        new_definition_parts = self.clean_definition(new_definition)  # 调用静态方法
+
+
+        # 转换为集合后进行子集检查
+        if set(new_definition_parts).issubset(set(current_definition)):
             return JsonResponse({"success": False, "message": "释义重复，无需更新。"})
+
+        # 合并现有和新释义，避免重复
+        updated_definition = ' '.join(current_definition | new_definition_parts)
+
+        # 更新条目内容
+        item.content = updated_definition
+        item.src_tts = src_tts
+        item.us_phonetic = phonetic_am
+        item.uk_phonetic = phonetic_en
+        item.save()
 
         # 返回翻译结果
         return JsonResponse({
             "success": True,
-            "definition": definition,
-            "src_tts": src_tts
+            "definition": new_definition,
+            "src_tts": src_tts,
+            "phonetic_am": phonetic_am,
+            "phonetic_en": phonetic_en
         })
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        # 调用 check_api_keys 检查 API 配置状态
+        # 检查 API 配置状态
         api_status = "available" if check_api_keys() else "unavailable"
 
         # 将 API 状态传入模板上下文
         extra_context = extra_context or {}
         extra_context['api_status'] = api_status
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
+
 
 
 

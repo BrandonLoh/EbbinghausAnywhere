@@ -120,6 +120,24 @@
                     <p><strong>掌握程度:</strong> {{ word.1.get_proficiency_display }}</p>
                     <p><strong>类型:</strong> {{ word.1.category.name }}</p>
                     <p><strong>学习日期：</strong>{{ word.1.inputDate }}</p>
+                      <!-- 仅当类别是"单词"且存在音标时，显示音标 -->
+                      {% if word.1.category.name == "单词" %}
+                      {% if word.1.us_phonetic %}
+                        <p><strong>美式音标:</strong> {{ word.1.us_phonetic }}</p>
+                      {% endif %}
+                      {% if word.1.uk_phonetic %}
+                        <p><strong>英式音标:</strong> {{ word.1.uk_phonetic }}</p>
+                      {% endif %}
+
+                      <!-- 如果存在src_tts，显示音频播放器 -->
+                      {% if word.1.src_tts %}
+                        <p><strong>发音:</strong></p>
+                        <audio controls>
+                          <source src="{{ word.1.src_tts }}" type="audio/mpeg">
+                          您的浏览器不支持音频播放。
+                        </audio>
+                      {% endif %}
+                    {% endif %}
                     {% autoescape off %}
                     <p style="white-space: pre-line"><strong>内容：</strong><br>{{ word.1.content|safe }}</p>
                     {% endautoescape %}

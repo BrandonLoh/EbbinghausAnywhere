@@ -33,6 +33,7 @@ urlpatterns = [
     path('review-feedback/reset/', views.ReviewFeedbackReset, name='review-feedback-reset'),
     path('translate/', views.translate, name='translate'),#后端处理翻译请求
     path('translate_test/', views.translate_test, name='translate_test'),#BAIDU API获取释义测试页面
-    path('api/check-baidi-keys/', views.check_api_keys_view, name='check-api-keys'),#检测是否配置了BAIDU API
+    path('api/check-baidu-keys/', views.check_api_keys_view, name='check-api-keys'),#检测是否配置了BAIDU API
+    path('input/', views.InputView, name='input-view'),#输入内容页面
 
 ]

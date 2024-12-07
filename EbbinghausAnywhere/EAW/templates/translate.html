@@ -22,6 +22,8 @@
             <h4>翻译结果</h4>
             <div id="translation"></div>
             <div id="audio" class="mt-2"></div>
+            <h5 class="mt-4">完整的响应字典:</h5>
+            <pre id="jsonResponse" style="white-space: pre-wrap;"></pre>
         </div>
     </div>
 
@@ -45,6 +47,12 @@
                 contentType: 'application/json',
                 data: JSON.stringify({ 'query': query }),
                 success: function(response) {
+                    // 输出整个 response JSON 到控制台，方便调试
+                    console.log('完整的响应内容：', response);
+
+                    // 在页面上显示完整的响应字典
+                    $('#jsonResponse').text(JSON.stringify(response, null, 2));
+
                     if (response.success) {
                         displayTranslation(response.result);
                     } else {
@@ -55,6 +63,7 @@
                 error: function() {
                     $('#translation').text('请求失败，请稍后重试。');
                     $('#audio').empty();
+                    $('#jsonResponse').empty();
                 }
             });
         });

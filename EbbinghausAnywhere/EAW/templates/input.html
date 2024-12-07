@@ -1,0 +1,66 @@
+{% extends "base_generic.html" %}
+
+{% block content-left %}
+    <h3>日积月累</h3>
+    <div class="form-group">
+        <form role="form" action="" method="post" enctype="multipart/form-data" autocomplete="off">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4 mt-3">
+                    <label for="input_date" class="form-label">选择日期：</label><br>
+                    {{ form.input_date }}
+                </div>
+                <div class="col-md-4 mt-3">
+                    <label for="category" class="form-label">选择类别：</label><br>
+                    {{ form.category }}  <!-- 更新为 category -->
+                </div>
+                <div class="col-md-12 mt-3">
+                    <label for="input" class="form-label">输入内容：</label><br>
+                    {{ form.input }}
+                </div>
+                <div class="col-md-12 mt-3">
+                    <label for="translate" class="form-label">
+                        <input type="checkbox" id="translate-checkbox" name="translate" {% if not api_configured %}disabled{% endif %}>
+                        获取释义
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-12 mt-3">
+                <input type="submit" value="保存">
+            </div>
+        </form>
+    </div>
+    
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#id_input_date", {
+            dateFormat: "Y-m-d"
+        });
+
+        // 在页面加载时检查API配置状态
+        window.onload = function() {
+            checkApiConfig();
+        };
+
+        function checkApiConfig() {
+            // 发起AJAX请求检查API配置
+            fetch('/api/check-baidu-keys/')  // 调用API检查接口
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 如果API密钥配置正确，启用复选框
+                        document.getElementById("translate-checkbox").disabled = false;
+                    } else {
+                        // 如果API密钥未配置，禁用复选框
+                        document.getElementById("translate-checkbox").disabled = true;
+                    }
+                })
+                .catch(error => {
+                    // 如果请求失败，禁用复选框
+                    document.getElementById("translate-checkbox").disabled = true;
+                });
+        }
+    </script>
+{% endblock %}

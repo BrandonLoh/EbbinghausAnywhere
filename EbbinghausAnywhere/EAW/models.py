@@ -71,7 +71,18 @@ class Item(models.Model):
         blank=True,
         help_text="URL pointing to the TTS audio file (e.g., Baidu API TTS)"
     )
-
+    us_phonetic = models.CharField(
+        max_length=200, 
+        null=True, 
+        blank=True, 
+        help_text="American Phonetic (optional)"
+    )
+    uk_phonetic = models.CharField(
+        max_length=200, 
+        null=True, 
+        blank=True, 
+        help_text="British Phonetic (optional)"
+    )
     def __str__(self):
         return f"{self.item} ({self.get_proficiency_display()}) in {self.category.name}"
 
@@ -89,8 +100,8 @@ class Item(models.Model):
         #print (reverse('review-detail', args=[year, month, day, str(self.id)]))
         return reverse('review-view', args=[year, month, day, str(self.id)])
     class Meta:
-        unique_together = ('user', 'item')  # 确保每个用户的单词库中单词不重复
-
+        #unique_together = ('user', 'item')  # 确保每个用户的单词库中单词不重复
+        pass
 class ReviewDay(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,editable=False)  # 关联用户
     day = models.IntegerField()

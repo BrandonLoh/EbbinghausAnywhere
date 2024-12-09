@@ -53,4 +53,41 @@
     <!-- Optional: Custom JavaScript
     <script src="{% static 'js/scripts.js' %}"></script> -->
 </body>
+<script>
+    // 等待页面加载完成后渲染 MathJax
+    document.addEventListener("DOMContentLoaded", function () {
+        MathJax.typeset();
+    });
+  </script>
 </html>
+<script type="text/javascript">
+    function  Trim(strValue)
+    {
+       return   strValue.replace(/^s*|s*$/g,"");
+    }
+  
+    function SetCookie(sName,sValue)
+    {
+       document.cookie = sName + "=" + escape(sValue);
+    }
+  
+    function GetCookie(sName)
+    {
+       var aCookie = document.cookie.split(";");
+       for(var i=0; i< aCookie.length; i++)
+       {
+          var aCrumb = aCookie[i].split("=");
+          if(sName == Trim(aCrumb[0]))
+          {
+             return unescape(aCrumb[1]);
+          }
+       }
+  
+       return null;
+    }
+  
+    function scrollback()
+    {
+       if(GetCookie("scroll")!=null){document.body.scrollTop=GetCookie("scroll")}
+    }
+  </script>

@@ -15,16 +15,24 @@
     <!-- 加载 MathJax -->
     <script>
         window.MathJax = {
-          tex: {
+        tex: {
             inlineMath: [['$', '$'], ['\\(', '\\)']],
-            packages: {'[+]': ['mhchem']}
-          },
-          loader: {load: ['[tex]/mhchem']},
+            packages: { '[+]': ['mhchem', 'extpfeil'] } // 添加 extpfeil 包
+        },
+        loader: {
+            load: ['[tex]/mhchem', '[tex]/extpfeil'] // 确保加载 extpfeil
+        },
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <!-- 引入 Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .mjx-mtext {
+          line-height: 1.2; /* 调整行高以更好对齐 */
+          font-family: 'Arial', 'Noto Sans', 'WenQuanYi Micro Hei', sans-serif; /* 设置中文兼容字体 */
+        }
+      </style>
 
 
 

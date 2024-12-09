@@ -348,8 +348,8 @@ def InputView(request):
             split = data['input'].split('\r\n')
             category_object = Category.objects.get(name=data['category'], user=request.user)  # 仅查找当前用户的类别
 
-            # 获取是否勾选了翻译复选框
-            translate = 'translate' in request.POST
+            # 获取是否勾选了翻译复选框，并且类别为"单词"
+            translate = 'translate' in request.POST and data['category'] == '单词'
 
             for item in split:
                 explain_txt = ''

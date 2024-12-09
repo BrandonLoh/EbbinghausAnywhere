@@ -1,7 +1,93 @@
-{% extends "base_generic.html" %}
+<div class="container-fluid p-0">
+  <div class="card w-100" style="max-width: 1200px; width: 100%;">
+    <div class="card-header">
+      <a class="btn" data-bs-toggle="collapse" href="#collapseTitle">
+        <iframe id="id_frame" name="hideIframe1" title="title_Iframe" style="display:none;"></iframe>
+        {{ reviewdate }}需要复习下列内容：
+      </a>
+    </div>
+    <div class="card-body p-1">
+      <div class="collapse show" id="collapseTitle">
+        {% for key, value in output.items %}
+        <table class="table table-condensed table-hover w-100 mx-auto">
+          <thead data-bs-toggle="collapse" href="#collapse{{ key }}">
+            <tr>
+              <th width="50%">{{ key }} ({{ value | length }})</th>
+              <th width="25%">复习周期</th>
+              <th width="25%">掌握程度</th>
+            </tr>
+          </thead>
+          <tbody id="collapse{{ key }}" class="collapse show" data-bs-parent="#collapseTitle">
+            {% for word in value %}
+            <tr id="td{{ word.1.id }}" data-bs-toggle="modal" data-bs-target="#myModal{{ word.1.id }}">
+              <td>{{ word.1.item }}</td>
+              <td>第 {{ word.0 }} 天</td>
+              <td class="proficiency-cell">{{ word.1.get_proficiency_display }}</td>
+            </tr>
 
-{% block content-left %}
+            <!-- Modal -->
+            <div class="modal fade" id="myModal{{ word.1.id }}" tabindex="-1" aria-labelledby="myModalLabel{{ word.1.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+
+                  <!-- Modal Header -->
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel{{ word.1.id }}">
+                      <a href="/admin/EAW/item/{{ word.1.id }}/change/">{{ word.1.item }}</a>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+
+                  <!-- Modal Body -->
+                  <div class="modal-body">
+                    <p><strong>掌握程度:</strong> {{ word.1.get_proficiency_display }}</p>
+                    <p><strong>类型:</strong> {{ word.1.category.name }}</p>
+                    <p><strong>学习日期：</strong>{{ word.1.inputDate }}</p>
+                    {% if word.1.category.name == "单词" %}
+                      {% if word.1.us_phonetic %}
+                        <p><strong>美式音标:</strong> {{ word.1.us_phonetic }}</p>
+                      {% endif %}
+                      {% if word.1.uk_phonetic %}
+                        <p><strong>英式音标:</strong> {{ word.1.uk_phonetic }}</p>
+                      {% endif %}
+
+                      {% if word.1.src_tts %}
+                        <p><strong>发音:</strong></p>
+                        <audio controls>
+                          <source src="{{ word.1.src_tts }}" type="audio/mpeg">
+                          您的浏览器不支持音频播放。
+                        </audio>
+                      {% endif %}
+                    {% endif %}
+                    {% autoescape off %}
+                    <p style="white-space: pre-line"><strong>内容：</strong><br>{{ word.1.content|safe }}</p>
+                    {% endautoescape %}
+                  </div>
+
+                  <!-- Modal Footer -->
+                  <div class="modal-footer">
+                    <form enctype="multipart/form-data" method="post" onsubmit="return false">
+                      {% csrf_token %}
+                      <button class="btn btn-success feedback-btn" data-id="{{ word.1.id }}" data-action="yes">YES</button>
+                      <button class="btn btn-danger feedback-btn" data-id="{{ word.1.id }}" data-action="no">NO</button>
+                      <button class="btn btn-warning feedback-btn" data-id="{{ word.1.id }}" data-action="reset">RESET</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+  console.log('Script Loaded');  // 检查脚本是否加载成功
   const feedbackUrls = {
     yes: '/review-feedback/yes/',
     no: '/review-feedback/no/',
@@ -56,12 +142,15 @@
     const row = document.getElementById(`td${wordId}`);
     const data = JSON.stringify({ id: wordId, date: '{{ reviewdate }}' });
 
+    // 调试：检查按钮点击事件是否触发
+    // console.log(`Button clicked: ${action} for word ID: ${wordId}`);
+
     // 发送请求到后端
     postData(feedbackUrls[action], data, (response) => {
       if (response.success) {
         updateRowStyle(row, action, response.mastery); // 更新整行样式和掌握程度
       } else {
-        console.error("Error:", response.message);
+        // console.error("Error:", response.message);
         alert("操作失败：" + response.message); // 提示错误
       }
     });
@@ -69,99 +158,14 @@
 
   // 等 DOM 加载完成后绑定事件
   document.addEventListener('DOMContentLoaded', function () {
+    // console.log('DOM fully loaded and parsed');
+    
     document.querySelectorAll('.feedback-btn').forEach(button => {
       button.addEventListener('click', handleButtonClick);
+      
+      // 调试：检查按钮是否存在并绑定事件
+      // console.log(`Button with ID ${button.getAttribute('data-id')} bound to event`);
     });
   });
 </script>
 
-<div class="container-fluid p-0">
-  <div class="card w-100" style="max-width: 1200px; width: 100%;">
-    <div class="card-header">
-      <a class="btn" data-bs-toggle="collapse" href="#collapseTitle">
-        <iframe id="id_frame" name="hideIframe1" title="title_Iframe" style="display:none;"></iframe>
-        {{ reviewdate }}需要复习下列内容：
-      </a>
-    </div>
-    <div class="card-body p-1">
-      <div class="collapse show" id="collapseTitle">
-        {% for key, value in output.items %}
-        <table class="table table-condensed table-hover w-100 mx-auto">
-          <thead data-bs-toggle="collapse" href="#collapse{{ key }}">
-            <tr>
-              <th width="50%">{{ key }} ({{ value | length }})</th>
-              <th width="25%">复习周期</th>
-              <th width="25%">掌握程度</th>
-            </tr>
-          </thead>
-          <tbody id="collapse{{ key }}" class="collapse show" data-bs-parent="#collapseTitle">
-            {% for word in value %}
-            <tr id="td{{ word.1.id }}" data-bs-toggle="modal" data-bs-target="#myModal{{ word.1.id }}">
-              <td>{{ word.1.item }}</td>
-              <td>第 {{ word.0 }} 天</td>
-              <td class="proficiency-cell">{{ word.1.get_proficiency_display }}</td>
-            </tr>
-
-            <!-- Modal -->
-            <div class="modal fade" id="myModal{{ word.1.id }}" tabindex="-1" aria-labelledby="myModalLabel{{ word.1.id }}" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-
-                  <!-- Modal Header -->
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="myModalLabel{{ word.1.id }}">
-                      <a href="/admin/EAW/item/{{ word.1.id }}/change/">{{ word.1.item }}</a>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-
-                  <!-- Modal Body -->
-                  <div class="modal-body">
-                    <p><strong>掌握程度:</strong> {{ word.1.get_proficiency_display }}</p>
-                    <p><strong>类型:</strong> {{ word.1.category.name }}</p>
-                    <p><strong>学习日期：</strong>{{ word.1.inputDate }}</p>
-                      <!-- 仅当类别是"单词"且存在音标时，显示音标 -->
-                      {% if word.1.category.name == "单词" %}
-                      {% if word.1.us_phonetic %}
-                        <p><strong>美式音标:</strong> {{ word.1.us_phonetic }}</p>
-                      {% endif %}
-                      {% if word.1.uk_phonetic %}
-                        <p><strong>英式音标:</strong> {{ word.1.uk_phonetic }}</p>
-                      {% endif %}
-
-                      <!-- 如果存在src_tts，显示音频播放器 -->
-                      {% if word.1.src_tts %}
-                        <p><strong>发音:</strong></p>
-                        <audio controls>
-                          <source src="{{ word.1.src_tts }}" type="audio/mpeg">
-                          您的浏览器不支持音频播放。
-                        </audio>
-                      {% endif %}
-                    {% endif %}
-                    {% autoescape off %}
-                    <p style="white-space: pre-line"><strong>内容：</strong><br>{{ word.1.content|safe }}</p>
-                    {% endautoescape %}
-                  </div>
-
-                  <!-- Modal Footer -->
-                  <div class="modal-footer">
-                    <form enctype="multipart/form-data" method="post" onsubmit="return false">
-                      {% csrf_token %}
-                      <button class="btn btn-success feedback-btn" data-id="{{ word.1.id }}" data-action="yes">YES</button>
-                      <button class="btn btn-danger feedback-btn" data-id="{{ word.1.id }}" data-action="no">NO</button>
-                      <button class="btn btn-warning feedback-btn" data-id="{{ word.1.id }}" data-action="reset">RESET</button>
-                    </form>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-</div>
-{% endblock %}

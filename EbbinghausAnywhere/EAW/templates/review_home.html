@@ -3,7 +3,8 @@
 {% block content-left %}
 <h3>日积月累</h3>
 
-<form id="reviewForm" action="" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return redirectToReview();">
+<!-- 日期选择表单 -->
+<form id="reviewForm" action="" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return loadReviewContent();">
     {% csrf_token %}
     <div class="row">
         <div class="input-group mb-3 mt-3">
@@ -14,13 +15,19 @@
     </div>
 </form>
 
+<!-- 隐藏的容器，用于加载 review_day.html 的内容 -->
+<div id="reviewContent" style="display: none;"></div>
+
 <!-- Flatpickr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    // 使用 window.onload 确保页面完全加载后再执行代码
+    window.onload = function() {
         // 获取当天日期并格式化为 YYYY-MM-DD
         const today = new Date().toISOString().split('T')[0];
+
+        // 确保在页面加载后输出当前日期
         console.log("当前日期为：", today); // 控制台日志确认
 
         // 初始化 Flatpickr
@@ -28,11 +35,36 @@
             dateFormat: "Y-m-d",      // 设置日期格式
             defaultDate: today        // 将当天日期设置为默认值
         });
-    });
+    };
 
-    // 表单提交时跳转到指定页面
-    function redirectToReview() {
-        // 获取用户选择的日期
+    // 更新行样式的函数
+    function updateRowStyle(row, action, mastery) {
+        // 移除整行文字的旧样式
+        row.querySelectorAll('td').forEach(cell => {
+            cell.classList.remove('text-success', 'text-danger', 'text-warning', 'fw-bold');
+        });
+
+        // 更新掌握程度文字
+        const proficiencyCell = row.querySelector('.proficiency-cell');
+        proficiencyCell.textContent = mastery;
+
+        // 根据操作更新整行文字样式
+        const cells = row.querySelectorAll('td');
+        if (action === 'yes') {
+            cells.forEach(cell => cell.classList.add('text-success')); // 文字变绿色
+        } else if (action === 'no') {
+            cells.forEach(cell => {
+                cell.classList.add('text-danger', 'fw-bold'); // 文字变红且加粗
+            });
+        } else if (action === 'reset') {
+            cells.forEach(cell => {
+                cell.classList.add('text-warning', 'fw-bold'); // 文字变黄色且加粗
+            });
+        }
+    }
+
+    // 动态加载复习内容
+    function loadReviewContent() {
         const reviewDate = document.getElementById("id_review_date").value;
 
         // 检查日期是否有效
@@ -41,13 +73,70 @@
             return false; // 阻止表单提交
         }
 
-        // 跳转到指定的页面
-        const targetUrl = `http://127.0.0.1:8000/review/${reviewDate}`;
-        window.location.href = targetUrl;
+        // 发起 AJAX 请求加载复习内容
+        const url = `/review/${reviewDate}`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.ok) return response.text();
+            throw new Error('加载复习内容失败');
+        })
+        .then(html => {
+            const reviewContentDiv = document.getElementById('reviewContent');
+            reviewContentDiv.innerHTML = html;
+            reviewContentDiv.style.display = 'block';
 
-        // 阻止默认表单提交
-        return false;
+            // 重新绑定动态内容中的事件
+            bindReviewDayEvents();  // 确保绑定按钮事件
+        })
+        .catch(error => {
+            console.error(error);
+            alert('加载失败，请稍后重试');
+        });
+
+        return false; // 阻止默认表单提交
+    }
+
+    // 绑定 review_day.html 中的事件
+    function bindReviewDayEvents() {
+        console.log("Binding events for feedback buttons...");
+        
+        // 绑定按钮点击事件
+        document.querySelectorAll('.feedback-btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                const button = event.target;
+                const wordId = button.getAttribute('data-id');
+                const action = button.getAttribute('data-action');
+                const row = document.getElementById(`td${wordId}`);
+                const data = JSON.stringify({ id: wordId, date: '{{ reviewdate }}' });
+
+                // 通用 POST 请求处理
+                fetch(`/review-feedback/${action}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: data,
+                })
+                .then(response => response.json())
+                .then(response => {
+                    if (response.success) {
+                        updateRowStyle(row, action, response.mastery);  // 调用 updateRowStyle
+                    } else {
+                        alert("操作失败：" + response.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            });
+        });
     }
 </script>
-{% endblock %}
 
+{% endblock %}

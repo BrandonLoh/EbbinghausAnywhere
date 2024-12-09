@@ -5,8 +5,6 @@ from django.db.models import Avg, Max, Min, Count, Sum
 from datetime import datetime
 from datetime import timedelta
 from .forms import InputForm
-
-
 from django.utils.decorators import method_decorator
 from django.views.generic.detail import DetailView
 from django.contrib.auth.decorators import permission_required
@@ -15,13 +13,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
-
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse
 from django.urls import reverse
-#from .translate import createRequest, getChengyuRequest, baidu_translate
 import json
 import csv
 from time import sleep
@@ -29,6 +26,7 @@ import logging
 import re
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.template.loader import render_to_string
 from .translate import baidu_translate, parse_json_to_string, check_api_keys
 
 
@@ -173,8 +171,9 @@ def SearchView(request):
 #复习单词的功能
 @login_required
 def ReviewHomeView(request):
+    print("Request routed to ReviewHomeView")  # 调试
     today = datetime.today().date()
-    print(today)
+    #print(today)
     return render(
         request,
         'review_home.html',
@@ -183,7 +182,8 @@ def ReviewHomeView(request):
 
 @login_required
 def ReviewView(request, year, month, day):
-    print(f"Year: {year}, Month: {month}, Day: {day}")
+    print(f"Request routed to ReviewView with date: {year}-{month}-{day}")  # 调试
+    #print(f"Year: {year}, Month: {month}, Day: {day}")
     # 创建选择的复习日期
     d1 = f"{year}-{month}-{day}"
     reviewDate = datetime.strptime(d1, '%Y-%m-%d').date()
@@ -209,11 +209,10 @@ def ReviewView(request, year, month, day):
             detail_url = reverse('item-detail', args=[item.pk])
             output[item.category.name].append([interval.day, item, detail_url])
     
-    return render(
-        request,
-        'review_day.html',
-        context={'output': output, 'reviewdate': reviewDate}
-    )
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return HttpResponse(render_to_string('review_day.html', {'output': output, 'reviewdate': reviewDate}, request))
+
+    return render(request, 'review_day.html', {'output': output, 'reviewdate': reviewDate})
 
 
 @login_required

@@ -1,0 +1,43 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<h2>用户信息管理</h2>
+
+<!-- 显示反馈消息 -->
+{% if messages %}
+    <ul class="alert alert-info">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<div class="container">
+    <!-- 修改邮箱 -->
+    <form method="POST" action="" class="form-group">
+        {% csrf_token %}
+        <h3>修改邮箱</h3>
+        {{ email_form.as_p }}
+        <button type="submit" name="update_email" class="btn btn-primary">更新邮箱</button>
+    </form>
+
+    <hr>
+
+    <!-- 修改密码 -->
+    <form method="POST" action="" class="form-group">
+        {% csrf_token %}
+        <h3>修改密码</h3>
+        {{ password_form.as_p }}
+        <button type="submit" class="btn btn-primary">更新密码</button>
+    </form>
+
+    <hr>
+
+    <!-- 导出用户数据 -->
+    <h3>导出用户数据</h3>
+    <a href="{% url 'export_user_data' %}" class="btn btn-success">导出数据到 Excel</a>
+
+    <!-- 导入用户数据 -->
+    <h3>导出用户数据</h3>
+    <a href="{% url 'import_user_data' %}" class="btn btn-warning">导入数据</a>
+</div>
+{% endblock %}

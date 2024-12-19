@@ -67,3 +67,13 @@ class InputForm(forms.Form):
             # 仅显示当前用户的类别
             self.fields['category'].queryset = Category.objects.filter(user=user) 
 
+class EmailUpdateForm(forms.Form):
+    email = forms.EmailField(
+        required=True,
+        label="新邮箱地址",
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',  # 添加样式类
+            'placeholder': '请输入新邮箱地址',
+        })
+    )
+

@@ -132,6 +132,23 @@ LOGOUT_URL = '/accounts/logout/'  # 退出登录后跳转的页面
 LOGIN_REDIRECT_URL = '/'  # 登录成功后跳转的页面
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 try:
     from .local_settings import *

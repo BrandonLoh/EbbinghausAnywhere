@@ -4,52 +4,49 @@
 {{ block.super }}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-        // 点击翻译按钮时发送请求
-        $("#translate-btn").on("click", function (e) {
-            e.preventDefault(); // 防止默认提交表单行为
-            const itemId = "{{ original.id }}"; // 获取当前项目的ID
-            const url = `/admin/EAW/item/translate/${itemId}/`; // 请求URL
+$(document).ready(function () {
+    $("#translate-btn").on("click", function (e) {
+        e.preventDefault(); // 防止默认提交表单行为
+        const itemId = "{{ original.id }}"; // 获取当前项目的ID
+        const url = `/admin/EAW/item/translate/${itemId}/`; // 请求URL
 
-            $.get(url, function (response) {
-                if (response.success) {
-                    alert("释义获取成功！");
+        $.get(url, function (response) {
+            if (response.success) {
+                alert("释义获取成功！");
 
-                    // 更新页面上的表单字段
-                    const definitionField = $("#id_content"); // 修改成实际释义字段 ID
-                    const srcTtsField = $("#id_src_tts"); // 修改成实际 TTS 地址字段 ID
-                    const phoneticAmField = $("#id_us_phonetic"); // 美式音标字段 ID
-                    const phoneticEnField = $("#id_uk_phonetic"); // 英式音标字段 ID
+                // 更新页面上的表单字段
+                const definitionField = $("#id_content"); // 修改成实际释义字段 ID
+                const srcTtsField = $("#id_src_tts"); // 修改成实际 TTS 地址字段 ID
+                const phoneticAmField = $("#id_us_phonetic"); // 美式音标字段 ID
+                const phoneticEnField = $("#id_uk_phonetic"); // 英式音标字段 ID
 
-                    // 检查并追加到释义字段
-                    if (definitionField.length) {
-                        const currentValue = definitionField.val();
-                        if (!currentValue.includes(response.definition)) {
-                            definitionField.val(currentValue + "\n" + response.definition);
-                        }
-                    }
-
-                    // 更新 TTS 地址
-                    if (srcTtsField.length) {
-                        srcTtsField.val(response.src_tts);
-                    }
-                    // 更新美式音标
-                    if (phoneticAmField.length && response.phonetic_am) {
-                        phoneticAmField.val(response.phonetic_am);
-                    }
-
-                    // 更新英式音标
-                    if (phoneticEnField.length && response.phonetic_en) {
-                        phoneticEnField.val(response.phonetic_en);
-                    }
-                } else {
-                    alert(response.message || "操作失败，请稍后重试！");
+                // 直接覆盖释义字段内容
+                if (definitionField.length) {
+                    definitionField.val(response.definition.trim());
                 }
-            }).fail(function () {
-                alert("请求失败，请检查网络或稍后重试！");
-            });
+
+                // 更新 TTS 地址
+                if (srcTtsField.length) {
+                    srcTtsField.val(response.src_tts);
+                }
+                // 更新美式音标
+                if (phoneticAmField.length && response.phonetic_am) {
+                    phoneticAmField.val(response.phonetic_am);
+                }
+
+                // 更新英式音标
+                if (phoneticEnField.length && response.phonetic_en) {
+                    phoneticEnField.val(response.phonetic_en);
+                }
+            } else {
+                alert(response.message || "操作失败，请稍后重试！");
+            }
+        }).fail(function () {
+            alert("请求失败，请检查网络或稍后重试！");
         });
     });
+});
+
 </script>
 {% endblock %}
 

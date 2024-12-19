@@ -50,7 +50,7 @@ class Proficiency(models.Model):
 class Item(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,editable=False)  # 关联用户
     item = models.CharField(max_length = 200)
-    content = models.TextField(max_length = 1000)
+    content = models.TextField(max_length=1000, null=True, blank=True)
     inputDate = models.DateField(auto_now = False, auto_now_add = False)
     initDate = models.DateField(auto_now = False, auto_now_add = False)
     proficiency = models.IntegerField(

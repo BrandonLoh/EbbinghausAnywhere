@@ -4,13 +4,18 @@ from django.views import generic
 from django.db.models import Avg, Max, Min, Count, Sum
 from datetime import datetime
 from datetime import timedelta
-from .forms import InputForm
+from django.utils.timezone import now
+from django import forms
+from .forms import InputForm, EmailUpdateForm
 from django.utils.decorators import method_decorator
 from django.views.generic.detail import DetailView
 from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
@@ -28,7 +33,11 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.template.loader import render_to_string
 from .translate import baidu_translate, parse_json_to_string, check_api_keys
-
+import openpyxl
+from django.db import transaction
+from .models import Item, Category, Proficiency
+from .admin import ItemAdmin
+import difflib
 
 logger = logging.getLogger(__name__)
 
@@ -38,38 +47,76 @@ from .models import Item, Proficiency, Category, ReviewDay
 def custom_login(request):
     return render(request, 'registration/login.html')  # 指向自定义的模板文件
 
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True, help_text="请输入有效的邮箱地址")
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
+
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            # 保存用户
             user = form.save()
             username = form.cleaned_data.get('username')
 
-            # 将用户添加到 "Public" 组
+            # 加入 Public 组，设置默认值等
             public_group, created = Group.objects.get_or_create(name='Public')
             user.groups.add(public_group)
-
-            # 为用户赋予登录后台的权限
             user.is_staff = True
             user.save()
 
-            # 创建默认 "单词" 分类
             Category.objects.create(user=user, name="单词", sort_order=1, is_default=True)
 
-            # 创建默认的复习天数
             review_days = [1, 2, 4, 7, 15, 30, 90, 180, 365]
             ReviewDay.objects.bulk_create(
                 [ReviewDay(user=user, day=day) for day in review_days]
             )
 
-            # 提示用户注册成功
             messages.success(request, f'Account created for {username}!')
             return redirect('login')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
 
     return render(request, 'registration/register.html', {'form': form})
+
+@login_required
+def user_profile(request):
+    if request.method == 'POST':
+        email_form = EmailUpdateForm(request.POST, initial={'email': request.user.email})
+        password_form = PasswordChangeForm(user=request.user, data=request.POST)
+
+        if 'update_email' in request.POST and email_form.is_valid():
+            # 修改邮箱
+            new_email = email_form.cleaned_data.get('email')
+            request.user.email = new_email
+            request.user.save()
+            messages.success(request, '邮箱更新成功！')
+
+        elif password_form.is_valid():
+            # 修改密码
+            password_form.save()
+            update_session_auth_hash(request, password_form.user)  # 防止登出
+            messages.success(request, '密码更新成功！')
+
+    else:
+        email_form = EmailUpdateForm(initial={'email': request.user.email})
+        password_form = PasswordChangeForm(user=request.user)
+
+    context = {
+        'email_form': email_form,
+        'password_form': password_form,
+    }
+    return render(request, 'users/profile.html', context)
+
 
 
 @login_required
@@ -428,3 +475,180 @@ def split_string(s):
     
     # 根据位置分割字符串
     return s[:pos], s[pos + 1:]
+
+
+@login_required
+def export_user_data_to_excel(request):
+    # 获取当前用户数据
+    user = request.user
+    items = Item.objects.filter(user=user)
+
+    # 创建一个新的 Excel 工作簿
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "User Data"
+
+    # 写入表头
+    headers = ["Item", "Content", "Input Date", "Init Date", "Proficiency", "Category", "TTS URL", "US Phonetic", "UK Phonetic"]
+    sheet.append(headers)
+
+    # 写入用户数据
+    for item in items:
+        sheet.append([
+            item.item,
+            item.content,
+            item.inputDate,
+            item.initDate,
+            item.get_proficiency_display(),
+            item.category.name if item.category else "",
+            item.src_tts,
+            item.us_phonetic,
+            item.uk_phonetic,
+        ])
+
+    # 创建 HTTP 响应
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = 'attachment; filename="user_data.xlsx"'
+
+    # 将工作簿保存到响应中
+    workbook.save(response)
+
+    return response
+    
+
+
+@login_required
+# 上传并处理 Excel 文件
+def import_items_from_excel(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        file = request.FILES["file"]
+        user = request.user
+
+        try:
+            workbook = openpyxl.load_workbook(file)
+            sheet = workbook.active
+        except Exception as e:
+            messages.error(request, f"文件读取失败: {str(e)}")
+            return render(request, "import_excel.html")
+
+        headers = [cell.value for cell in sheet[1]]
+        required_columns = ["Item"]
+        if not all(col in headers for col in required_columns):
+            messages.error(request, "文件格式错误，缺少必要的列。")
+            return render(request, "import_excel.html")
+
+        column_index = {header: headers.index(header) for header in headers}
+        items_to_create = []
+        errors = []
+
+        # Proficiency 字段的映射
+        proficiency_map = {
+            "Unfamiliar": Proficiency.UNFAMILIAR,
+            "Mastered": Proficiency.MASTERED,
+        }
+
+        for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+            try:
+                item_name = row[column_index["Item"]]
+                if not item_name:
+                    errors.append(f"第 {row_idx} 行缺少 Item 字段，已跳过。")
+                    continue
+
+                content = row[column_index.get("Content", None)] or ""
+                input_date = row[column_index.get("Input Date", None)] or now().date()
+                init_date = row[column_index.get("Init Date", None)] or now().date()
+
+                # 处理 Proficiency 字段
+                proficiency_name = row[column_index.get("Proficiency", None)] or "Unfamiliar"
+                
+
+                if proficiency_name in proficiency_map:
+                    proficiency_degree = proficiency_map.get(proficiency_name, Proficiency.UNFAMILIAR)
+                else:
+                    errors.append(f"第 {row_idx} 行的 Proficiency 值无效: {proficiency_name}，已默认设为 Unfamiliar。")
+                    logger.warning(f"第 {row_idx} 行的 Proficiency 值无效: {proficiency_name}")
+                    proficiency_degree = Proficiency.UNFAMILIAR
+
+                category_name = row[column_index.get("Category", None)]
+                src_tts = row[column_index.get("TTS URL", None)] or ""
+                us_phonetic = row[column_index.get("US Phonetic", None)] or ""
+                uk_phonetic = row[column_index.get("UK Phonetic", None)] or ""
+
+                category = None
+                if category_name:
+                    categories = Category.objects.filter(name=category_name, user=user)
+                    if categories.exists():
+                        category = categories.first()  # 如果有多条，使用第一条
+                    else:
+                        category = Category.objects.create(name=category_name, user=user)
+
+                translation_result = baidu_translate(item_name)
+                if translation_result:
+                    phonetic = translation_result.get("phonetic", [])
+                    us_phonetic = phonetic[1] if len(phonetic) > 1 else us_phonetic
+                    uk_phonetic = phonetic[0] if len(phonetic) > 0 else uk_phonetic
+                    src_tts = translation_result.get("src_tts", src_tts)
+
+                    simple_meaning = translation_result.get("simple_meaning", [])
+                    parts_and_means = translation_result.get("parts_and_means", [])
+
+                    new_definition = "\n".join([str(item) for item in parts_and_means]).strip() if parts_and_means else (simple_meaning[0] if simple_meaning else "")
+
+                    existing_definition = " ".join(ItemAdmin.clean_definition(content))
+                    content = compare_lines(existing_definition, new_definition)
+
+                item = Item(
+                    user=user,
+                    item=item_name,
+                    content=content,
+                    inputDate=input_date,
+                    initDate=init_date,
+                    proficiency=proficiency_degree,
+                    category=category,
+                    src_tts=src_tts,
+                    us_phonetic=us_phonetic,
+                    uk_phonetic=uk_phonetic
+                )
+                items_to_create.append(item)
+
+            except Exception as e:
+                errors.append(f"第 {row_idx} 行处理失败: {str(e)}")
+
+        try:
+            with transaction.atomic():
+                Item.objects.bulk_create(items_to_create)
+            success_message = f"导入完成。成功导入 {len(items_to_create)} 条记录，{len(errors)} 条记录跳过。"
+            messages.success(request, success_message)
+        except Exception as e:
+            messages.error(request, f"保存失败: {str(e)}")
+
+        return render(request, "import_data.html", {
+            "import_results": {
+                "success_count": len(items_to_create),
+                "errors": errors,
+            }
+        })
+
+    messages.error(request, "请求无效，请上传文件。")
+    return render(request, "import_data.html")
+
+    @staticmethod
+    def compare_lines(existing_lines, new_lines):
+        existing = [line.strip() for line in existing_lines.splitlines() if line.strip()]
+        new = [line.strip() for line in new_lines.splitlines() if line.strip()]
+
+        result = []
+        existing_set = set(existing)
+
+        # 逐行比较
+        for line in existing:
+            result.append(line)
+
+        for new_line in new:
+            if not any(difflib.SequenceMatcher(None, new_line, e_line).ratio() > 0.8 for e_line in existing_set):
+                result.append(new_line)
+
+        return "\n".join(result)
+
+
+

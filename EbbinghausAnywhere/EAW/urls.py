@@ -35,5 +35,8 @@ urlpatterns = [
     path('translate_test/', views.translate_test, name='translate_test'),#BAIDU API获取释义测试页面
     path('api/check-baidu-keys/', views.check_api_keys_view, name='check-api-keys'),#检测是否配置了BAIDU API
     path('input/', views.InputView, name='input-view'),#输入内容页面
+    path('profile/', views.user_profile, name='profile'),
+    path('export_user_data/', views.export_user_data_to_excel, name='export_user_data'),
+    path('import_user_data/', views.import_items_from_excel, name='import_user_data'),
 
 ]

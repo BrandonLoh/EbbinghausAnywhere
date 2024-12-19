@@ -12,6 +12,7 @@ from .translate import baidu_translate, check_api_keys
 from django.template.response import TemplateResponse
 import re
 import logging
+import difflib
 
 logger = logging.getLogger(__name__)
 
@@ -180,22 +181,42 @@ class ItemAdmin(BaseAdmin):
         return custom_urls + urls
     
     @staticmethod
-    def clean_definition(definition):
+    def clean_and_split_lines(content):
         """
-        清洗并拆解释义，去掉无关符号并分词。
+        清理内容并按行分割，去除无关符号和空行。
         """
-        if not definition:
+        if not content:
             return []
-        
-        # 移除非字母数字字符（比如标点符号等），并统一转换为小写
-        cleaned_definition = re.sub(r'[^\w\s]', '', definition.lower())
-        
-        # 将释义按分号拆分成单词/短语
-        return set(cleaned_definition.split(';'))
+        # 去除前后空白字符，并按行分割
+        cleaned_lines = [line.strip() for line in content.strip().split('\n') if line.strip()]
+        return cleaned_lines
+
+    @staticmethod
+    def compare_and_merge(existing_lines, new_lines, threshold=0.8):
+        """
+        逐行比较新旧内容，使用difflib筛选出相似度低于阈值的行，并合并。
+        """
+        merged_lines = existing_lines.copy()  # 保留原有内容
+        existing_set = set(existing_lines)  # 用集合快速去重
+
+        for new_line in new_lines:
+            is_duplicate = False
+            for existing_line in existing_lines:
+                # 计算相似度
+                similarity = difflib.SequenceMatcher(None, existing_line, new_line).ratio()
+                if similarity >= threshold:
+                    is_duplicate = True
+                    break
+            # 仅在不重复的情况下添加
+            if not is_duplicate and new_line not in existing_set:
+                merged_lines.append(new_line)
+
+        return merged_lines
+
 
     def translate_item(self, request, item_id):
         """
-        调用翻译函数并返回结果
+        调用翻译函数，逐行比较释义并合并新内容。
         """
         logger.debug(f"Received item_id: {item_id}")
         item = get_object_or_404(Item, id=item_id)
@@ -204,58 +225,42 @@ class ItemAdmin(BaseAdmin):
 
         # 调用翻译函数
         translation_result = baidu_translate(item.item)
-        # 判断翻译是否成功
         if not translation_result:
             return JsonResponse({"success": False, "message": "翻译失败，请稍后重试。"})
 
-        # 如果 parts_and_means 和 simple_meaning 都为空，则认为翻译失败
-        if not translation_result.get('parts_and_means') and not translation_result.get('simple_meaning'):
-            return JsonResponse({"success": False, "message": "翻译失败，请稍后重试。"})
-        # 解析结果
-        phonetic = translation_result.get('phonetic', [])
-        phonetic_am = phonetic[1] if len(phonetic) > 1 else None  # 美式音标
-        phonetic_en = phonetic[0] if len(phonetic) > 0 else None  # 英式音标
-        src_tts = translation_result.get('src_tts', '')
-        # 获取简明释义和词根释义
-        simple_meaning = translation_result.get('simple_meaning', [])
+        # 解析翻译结果
         parts_and_means = translation_result.get('parts_and_means', [])
-        # 初始化 new_definition，防止访问未定义的变量
-        new_definition = ""
+        simple_meaning = translation_result.get('simple_meaning', [])
+        src_tts = translation_result.get('src_tts', '')
+        phonetic = translation_result.get('phonetic', [])
+        phonetic_am = phonetic[1] if len(phonetic) > 1 else None
+        phonetic_en = phonetic[0] if len(phonetic) > 0 else None
 
+        # 获取新旧内容
+        current_content = item.content or ""
+        new_content = "\n".join(parts_and_means if parts_and_means else simple_meaning)
 
+        # 清理并分割内容
+        existing_lines = self.clean_and_split_lines(current_content)
+        new_lines = self.clean_and_split_lines(new_content)
 
-        # 如果有 parts_and_means，优先使用它
-        if parts_and_means:
-            new_definition = "\n".join([str(item) for item in parts_and_means]).strip()  # 获取“释义:”之后的部分
+        # 逐行比较并合并
+        updated_lines = self.compare_and_merge(existing_lines, new_lines, threshold=0.8)
 
-        # 如果没有 parts_and_means，才使用 simple_meaning
-        if not new_definition and simple_meaning:
-            new_definition = simple_meaning[0]  # 如果有简明释义，优先使用简明释义
+        # 合并后的内容
+        updated_content = "\n".join(updated_lines)
 
-
-        # 清洗并拆解现有内容和新内容
-        current_definition = self.clean_definition(item.content or "")  # 调用静态方法
-        new_definition_parts = self.clean_definition(new_definition)  # 调用静态方法
-
-
-        # 转换为集合后进行子集检查
-        if set(new_definition_parts).issubset(set(current_definition)):
-            return JsonResponse({"success": False, "message": "释义重复，无需更新。"})
-
-        # 合并现有和新释义，避免重复
-        updated_definition = ' '.join(current_definition | new_definition_parts)
-
-        # 更新条目内容
-        item.content = updated_definition
+        # 更新条目
+        item.content = updated_content
         item.src_tts = src_tts
         item.us_phonetic = phonetic_am
         item.uk_phonetic = phonetic_en
         item.save()
 
-        # 返回翻译结果
+        # 返回结果
         return JsonResponse({
             "success": True,
-            "definition": new_definition,
+            "definition": updated_content,
             "src_tts": src_tts,
             "phonetic_am": phonetic_am,
             "phonetic_en": phonetic_en

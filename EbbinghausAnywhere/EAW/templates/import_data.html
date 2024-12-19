@@ -3,8 +3,8 @@
 {% block content %}
 <h2>导入数据</h2>
 
-<!-- 显示反馈消息 -->
-{% if messages %}
+<!-- 显示反馈消息（仅在 POST 请求时） -->
+{% if messages and request.method == "POST" %}
     <ul class="alert alert-info">
         {% for message in messages %}
             <li>{{ message }}</li>
@@ -17,6 +17,12 @@
     <div class="form-group">
         <label for="file">上传 Excel 文件:</label>
         <input type="file" id="file" name="file" class="form-control" accept=".xlsx" required>
+    </div>
+
+    <!-- 新增复选框 -->
+    <div class="form-group form-check">
+        <input type="checkbox" id="fetch_definitions" name="fetch_definitions" class="form-check-input">
+        <label class="form-check-label" for="fetch_definitions">获取释义</label>
     </div>
 
     <button type="submit" class="btn btn-primary">导入数据</button>

@@ -518,24 +518,26 @@ def export_user_data_to_excel(request):
 
 
 @login_required
-# 上传并处理 Excel 文件
 def import_items_from_excel(request):
     if request.method == "POST" and request.FILES.get("file"):
         file = request.FILES["file"]
         user = request.user
+
+        # 检查是否选择了“获取释义”选项
+        fetch_definitions = "fetch_definitions" in request.POST
 
         try:
             workbook = openpyxl.load_workbook(file)
             sheet = workbook.active
         except Exception as e:
             messages.error(request, f"文件读取失败: {str(e)}")
-            return render(request, "import_excel.html")
+            return render(request, "import_data.html")
 
         headers = [cell.value for cell in sheet[1]]
         required_columns = ["Item"]
         if not all(col in headers for col in required_columns):
             messages.error(request, "文件格式错误，缺少必要的列。")
-            return render(request, "import_excel.html")
+            return render(request, "import_data.html")
 
         column_index = {header: headers.index(header) for header in headers}
         items_to_create = []
@@ -560,14 +562,7 @@ def import_items_from_excel(request):
 
                 # 处理 Proficiency 字段
                 proficiency_name = row[column_index.get("Proficiency", None)] or "Unfamiliar"
-                
-
-                if proficiency_name in proficiency_map:
-                    proficiency_degree = proficiency_map.get(proficiency_name, Proficiency.UNFAMILIAR)
-                else:
-                    errors.append(f"第 {row_idx} 行的 Proficiency 值无效: {proficiency_name}，已默认设为 Unfamiliar。")
-                    logger.warning(f"第 {row_idx} 行的 Proficiency 值无效: {proficiency_name}")
-                    proficiency_degree = Proficiency.UNFAMILIAR
+                proficiency_degree = proficiency_map.get(proficiency_name, Proficiency.UNFAMILIAR)
 
                 category_name = row[column_index.get("Category", None)]
                 src_tts = row[column_index.get("TTS URL", None)] or ""
@@ -578,24 +573,26 @@ def import_items_from_excel(request):
                 if category_name:
                     categories = Category.objects.filter(name=category_name, user=user)
                     if categories.exists():
-                        category = categories.first()  # 如果有多条，使用第一条
+                        category = categories.first()
                     else:
                         category = Category.objects.create(name=category_name, user=user)
 
-                translation_result = baidu_translate(item_name)
-                if translation_result:
-                    phonetic = translation_result.get("phonetic", [])
-                    us_phonetic = phonetic[1] if len(phonetic) > 1 else us_phonetic
-                    uk_phonetic = phonetic[0] if len(phonetic) > 0 else uk_phonetic
-                    src_tts = translation_result.get("src_tts", src_tts)
+                # 根据复选框的状态决定是否获取释义
+                if fetch_definitions:
+                    translation_result = baidu_translate(item_name)
+                    if translation_result:
+                        phonetic = translation_result.get("phonetic", [])
+                        us_phonetic = phonetic[1] if len(phonetic) > 1 else us_phonetic
+                        uk_phonetic = phonetic[0] if len(phonetic) > 0 else uk_phonetic
+                        src_tts = translation_result.get("src_tts", src_tts)
 
-                    simple_meaning = translation_result.get("simple_meaning", [])
-                    parts_and_means = translation_result.get("parts_and_means", [])
+                        simple_meaning = translation_result.get("simple_meaning", [])
+                        parts_and_means = translation_result.get("parts_and_means", [])
 
-                    new_definition = "\n".join([str(item) for item in parts_and_means]).strip() if parts_and_means else (simple_meaning[0] if simple_meaning else "")
+                        new_definition = "\n".join([str(item) for item in parts_and_means]).strip() if parts_and_means else (simple_meaning[0] if simple_meaning else "")
 
-                    existing_definition = " ".join(ItemAdmin.clean_definition(content))
-                    content = compare_lines(existing_definition, new_definition)
+                        existing_definition = " ".join(ItemAdmin.clean_definition(content))
+                        content = compare_lines(existing_definition, new_definition)
 
                 item = Item(
                     user=user,
@@ -607,7 +604,7 @@ def import_items_from_excel(request):
                     category=category,
                     src_tts=src_tts,
                     us_phonetic=us_phonetic,
-                    uk_phonetic=uk_phonetic
+                    uk_phonetic=uk_phonetic,
                 )
                 items_to_create.append(item)
 
@@ -631,6 +628,7 @@ def import_items_from_excel(request):
 
     messages.error(request, "请求无效，请上传文件。")
     return render(request, "import_data.html")
+
 
     @staticmethod
     def compare_lines(existing_lines, new_lines):

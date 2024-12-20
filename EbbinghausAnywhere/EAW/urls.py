@@ -5,7 +5,8 @@ from .views import ItemDetailView
 
 
 urlpatterns = [
-    path('', views.index, name='index'),  # Index view
+    path('', views.home, name='home'), # Home view
+    #path('', views.index, name='index'),  # Index view
     # 将 'home' 指向 'index' 页面
     path('home/', views.index, name='home'),  # Home view，直接指向 index
     # 用户认证相关的URL

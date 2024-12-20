@@ -118,6 +118,14 @@ def user_profile(request):
     return render(request, 'users/profile.html', context)
 
 
+def home(request):
+    # 检查用户是否登录
+    if request.user.is_authenticated:
+        # 用户已登录，返回登录后的首页
+        return render(request, 'home_logged_in.html')
+    else:
+        # 用户未登录，返回未登录的首页
+        return render(request, 'home_logged_out.html')
 
 @login_required
 def index(request):
@@ -630,23 +638,23 @@ def import_items_from_excel(request):
     return render(request, "import_data.html")
 
 
-    @staticmethod
-    def compare_lines(existing_lines, new_lines):
-        existing = [line.strip() for line in existing_lines.splitlines() if line.strip()]
-        new = [line.strip() for line in new_lines.splitlines() if line.strip()]
+@staticmethod
+def compare_lines(existing_lines, new_lines):
+    existing = [line.strip() for line in existing_lines.splitlines() if line.strip()]
+    new = [line.strip() for line in new_lines.splitlines() if line.strip()]
 
-        result = []
-        existing_set = set(existing)
+    result = []
+    existing_set = set(existing)
 
-        # 逐行比较
-        for line in existing:
-            result.append(line)
+    # 逐行比较
+    for line in existing:
+        result.append(line)
 
-        for new_line in new:
-            if not any(difflib.SequenceMatcher(None, new_line, e_line).ratio() > 0.8 for e_line in existing_set):
-                result.append(new_line)
+    for new_line in new:
+        if not any(difflib.SequenceMatcher(None, new_line, e_line).ratio() > 0.8 for e_line in existing_set):
+            result.append(new_line)
 
-        return "\n".join(result)
+    return "\n".join(result)
 
 
 

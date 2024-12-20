@@ -4,136 +4,84 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Home - Brand</title>
+    <title>Registration - Brand</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Source%20Sans%20Pro.css">
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
+    <style>
+        body {
+            background-image: url('assets/img/bg-callout.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 400px;
+            margin: auto;
+            margin-top: 5%;
+        }
+
+        .form-control::placeholder {
+            color: #999;
+        }
+
+        .tooltip-inner {
+            background-color: #333;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: #ffcc00;
+            border-color: #ffcc00;
+        }
+
+        .btn-primary:hover {
+            background-color: #e6b800;
+            border-color: #e6b800;
+        }
+    </style>
 </head>
 
-<body id="page-top"><a class="menu-toggle rounded" href="#"><i class="fa fa-bars"></i></a>
-    <nav class="navbar navbar-expand navbar-light" id="sidebar-wrapper">
-        <div class="container"><button data-bs-toggle="collapse" class="navbar-toggler d-none" data-bs-target="#"></button>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav sidebar-nav" id="sidebar-nav">
-                    <li class="nav-item sidebar-brand"><a class="nav-link active js-scroll-trigger" href="#page-top">Brand</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#page-top">Home</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#services">Services</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#portfolio">Portfolio</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <header class="d-flex masthead" style="background-image:url('assets/img/bg-masthead.jpg');">
-        <div class="container my-auto text-center">
-            <h1 class="mb-1">Stylish Portfoliо</h1>
-            <h3 class="mb-5"><em>A Free Bootstrap Theme</em></h3><a class="btn btn-primary btn-xl js-scroll-trigger" role="button" href="#about">Find Out More</a>
-            <div class="overlay"></div>
-        </div>
-    </header>
-    <section id="about" class="content-section bg-light">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-lg-10 mx-auto">
-                    <h2>Stylish Portfolio is the perfect theme for your next project!</h2>
-                    <p class="lead mb-5"><span>This theme features a flexible, UX friendly sidebar menu and stock photos from our friends at&nbsp;</span><a href="https://unsplash.com/">Unsplash</a><span>!</span></p><a class="btn btn-dark btn-xl js-scroll-trigger" role="button" href="#services">What We Offer</a>
+<body>
+    <div class="container">
+        <div class="register-card">
+            <h2 class="text-center mb-4">注册</h2>
+            <form>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="username" placeholder="用户名" data-bs-toggle="tooltip" data-bs-placement="right" title="150 characters or fewer. Letters, digits and @/./+/-/_ only.">
                 </div>
-            </div>
-        </div>
-    </section>
-    <section id="services" class="content-section bg-primary text-white text-center">
-        <div class="container">
-            <div class="content-section-heading">
-                <h3 class="text-secondary mb-0">Services</h3>
-                <h2 class="mb-5">What We Offer</h2>
-            </div>
-            <div class="row">
-                <div class="col-md-6 col-lg-3 mb-5 mb-lg-0"><span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-screen-smartphone"></i></span>
-                    <h4><strong>Responsive</strong></h4>
-                    <p class="mb-0 text-faded">Looks great on any screen size!</p>
+                <div class="mb-3">
+                    <input type="email" class="form-control" id="email" placeholder="邮箱地址" data-bs-toggle="tooltip" data-bs-placement="right" title="请输入有效的邮箱地址">
                 </div>
-                <div class="col-md-6 col-lg-3 mb-5 mb-lg-0"><span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-pencil"></i></span>
-                    <h4><strong>Redesigned</strong></h4>
-                    <p class="mb-0 text-faded">Freshly redesigned for Bootstrap 5.</p>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="password" placeholder="密码" data-bs-toggle="tooltip" data-bs-placement="right" title="Your password must contain at least 8 characters, including letters and numbers.">
                 </div>
-                <div class="col-md-6 col-lg-3 mb-5 mb-lg-0"><span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-like"></i></span>
-                    <h4><strong>Favorited</strong></h4>
-                    <p class="mb-0 text-faded"><span>Milions of users&nbsp;</span><i class="fa fa-heart"></i><span>&nbsp;us!</span></p>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="confirm-password" placeholder="确认密码" data-bs-toggle="tooltip" data-bs-placement="right" title="请再次输入密码以确认。">
                 </div>
-                <div class="col-md-6 col-lg-3 mb-5 mb-lg-0"><span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-mustache"></i></span>
-                    <h4><strong>Question</strong></h4>
-                    <p class="mb-0 text-faded">I mustache you a question...</p>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="terms">
+                    <label class="form-check-label" for="terms">我同意本网站的隐私政策和服务条款</label>
                 </div>
-            </div>
+                <button type="submit" class="btn btn-primary w-100">注册</button>
+            </form>
+            <p class="text-center mt-3">已经有账户了？<a href="#" class="text-decoration-none">登录</a></p>
         </div>
-    </section>
-    <section class="callout" style="background:linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), url(&quot;assets/img/bg-callout.jpg&quot;);background-position:center center;background-repeat:no-repeat;background-size:cover;">
-        <div class="container text-center">
-            <h2 class="mx-auto mb-5"><span>Welcome to&nbsp;</span><em>your</em><span><br>next website!<br></span></h2><a class="btn btn-primary btn-xl" role="button" href="#">Download Now!</a>
-        </div>
-    </section>
-    <section id="portfolio" class="content-section">
-        <div class="container">
-            <div class="content-section-heading text-center">
-                <h3 class="text-secondary mb-0">Portfolio</h3>
-                <h2 class="mb-5">Recent Projects</h2>
-            </div>
-            <div class="row g-0">
-                <div class="col-lg-6"><a class="portfolio-item" href="#">
-                        <div class="caption">
-                            <div class="caption-content">
-                                <h2>Stationary</h2>
-                                <p class="mb-0">A yellow pencil with envelopes on a clean, blue backdrop!</p>
-                            </div>
-                        </div><img class="img-fluid" src="assets/img/portfolio-1.jpg">
-                    </a></div>
-                <div class="col-lg-6"><a class="portfolio-item" href="#">
-                        <div class="caption">
-                            <div class="caption-content">
-                                <h2>Ice Cream</h2>
-                                <p class="mb-0">A dark blue background with a colored pencil, a clip, and a tiny ice cream cone!</p>
-                            </div>
-                        </div><img class="img-fluid" src="assets/img/portfolio-2.jpg">
-                    </a></div>
-                <div class="col-lg-6"><a class="portfolio-item" href="#">
-                        <div class="caption">
-                            <div class="caption-content">
-                                <h2>Strawberries</h2>
-                                <p class="mb-0">Strawberries are such a tasty snack, especially with a little sugar on top!</p>
-                            </div>
-                        </div><img class="img-fluid" src="assets/img/portfolio-3.jpg">
-                    </a></div>
-                <div class="col-lg-6"><a class="portfolio-item" href="#">
-                        <div class="caption">
-                            <div class="caption-content">
-                                <h2>Workspace</h2>
-                                <p class="mb-0">A yellow workspace with some scissors, pencils, and other objects.</p>
-                            </div>
-                        </div><img class="img-fluid" src="assets/img/portfolio-4.jpg">
-                    </a></div>
-            </div>
-        </div>
-    </section>
-    <section class="content-section bg-primary text-white">
-        <div class="container text-center">
-            <h2 class="mb-4">The buttons below are impossible to resist..</h2><a class="btn btn-light btn-xl me-4" role="button" href="#">Click Me!</a><a class="btn btn-dark btn-xl me-4" role="button" href="#">Look at Me</a>
-        </div>
-    </section>
-    <section id="contact" class="map"><iframe allowfullscreen="" frameborder="0" src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%" height="400"></iframe></section>
-    <footer class="footer text-center">
-        <div class="container">
-            <ul class="list-inline mb-5">
-                <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-social-facebook"></i></a></li>
-                <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-social-twitter"></i></a></li>
-                <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-social-github"></i></a></li>
-            </ul>
-            <p class="text-muted mb-0 small">Copyright &nbsp;© Brand 2024</p>
-        </div><a class="js-scroll-trigger scroll-to-top rounded" href="#page-top"><i class="fa fa-angle-up"></i></a>
-    </footer>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/stylish-portfolio.js"></script>
+    </div>
+
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    </script>
 </body>
 
 </html>

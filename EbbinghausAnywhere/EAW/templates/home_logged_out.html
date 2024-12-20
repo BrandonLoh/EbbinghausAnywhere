@@ -1,0 +1,12 @@
+{% extends "base_generic.html" %}
+{% load static %}  <!-- 在子模板中加载 static 标签 -->
+{% block content %}
+    <header class="d-flex masthead" style="background-image: url('{% static 'img/bg-masthead.jpg' %}');">          
+        <div class="container my-auto text-center">
+            <h1 class="mb-1">Ebbinghaus Anywhere</h1>
+            <h3 class="mb-5"><em>A Free Memory Tool</em></h3>
+            <a class="btn btn-primary btn-xl js-scroll-trigger" role="button" href="#about">Register for FREE!</a>
+            <div class="overlay"></div>
+        </div>
+    </header>
+{% endblock %}

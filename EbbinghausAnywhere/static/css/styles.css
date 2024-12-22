@@ -1,0 +1,33 @@
+<style>
+@media (max-width: 768px) {
+    .masthead {
+        padding: 1rem 0;
+        height: 70vh;
+        min-height: 300px;
+    }
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    h3 {
+        font-size: 1rem;
+    }
+    .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.875rem;
+    }
+    .container {
+        padding: 0 0.5rem;
+    }
+    footer.footer {
+        padding: 0.5rem 0;
+        font-size: 0.75rem;
+    }
+    footer .list-inline {
+        margin-bottom: 0;
+    }
+    .social-link {
+        display: none;
+    }
+}
+</style>

@@ -4,84 +4,41 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Registration - Brand</title>
+    <title>Home - Brand</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Source%20Sans%20Pro.css">
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
-    <style>
-        body {
-            background-image: url('assets/img/bg-callout.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            font-family: 'Source Sans Pro', sans-serif;
-        }
-
-        .register-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            max-width: 400px;
-            margin: auto;
-            margin-top: 5%;
-        }
-
-        .form-control::placeholder {
-            color: #999;
-        }
-
-        .tooltip-inner {
-            background-color: #333;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background-color: #ffcc00;
-            border-color: #ffcc00;
-        }
-
-        .btn-primary:hover {
-            background-color: #e6b800;
-            border-color: #e6b800;
-        }
-    </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="register-card">
-            <h2 class="text-center mb-4">注册</h2>
-            <form>
-                <div class="mb-3">
-                    <input type="text" class="form-control" id="username" placeholder="用户名" data-bs-toggle="tooltip" data-bs-placement="right" title="150 characters or fewer. Letters, digits and @/./+/-/_ only.">
-                </div>
-                <div class="mb-3">
-                    <input type="email" class="form-control" id="email" placeholder="邮箱地址" data-bs-toggle="tooltip" data-bs-placement="right" title="请输入有效的邮箱地址">
-                </div>
-                <div class="mb-3">
-                    <input type="password" class="form-control" id="password" placeholder="密码" data-bs-toggle="tooltip" data-bs-placement="right" title="Your password must contain at least 8 characters, including letters and numbers.">
-                </div>
-                <div class="mb-3">
-                    <input type="password" class="form-control" id="confirm-password" placeholder="确认密码" data-bs-toggle="tooltip" data-bs-placement="right" title="请再次输入密码以确认。">
-                </div>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="terms">
-                    <label class="form-check-label" for="terms">我同意本网站的隐私政策和服务条款</label>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">注册</button>
-            </form>
-            <p class="text-center mt-3">已经有账户了？<a href="#" class="text-decoration-none">登录</a></p>
+<body id="page-top"><a class="menu-toggle rounded" href="#"><i class="fa fa-bars"></i></a>
+    <nav class="navbar navbar-expand navbar-light" id="sidebar-wrapper">
+        <div class="container"><button data-bs-toggle="collapse" class="navbar-toggler d-none" data-bs-target="#"></button>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav sidebar-nav" id="sidebar-nav">
+                    <li class="nav-item sidebar-brand"><a class="nav-link active js-scroll-trigger" href="#page-top">Brand</a></li>
+                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#page-top">Home</a></li>
+                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
+                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#services">Services</a></li>
+                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#portfolio">Portfolio</a></li>
+                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
-
-    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-    </script>
+    </nav>
+    <section class="callout" style="background:linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), url(&quot;assets/img/bg-callout.jpg&quot;);background-position:center center;background-repeat:no-repeat;background-size:cover;">
+        <div class="container text-center">
+            <div class="card d-flex d-xxl-flex justify-content-xxl-center" style="width: 434px;">
+                <div class="card-body justify-content-xxl-center">
+                    <h4 class="card-title">Register</h4>
+                    <h6 class="text-muted card-subtitle mb-2">Subtitle</h6>
+                    <form></form>
+                    <p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p><input type="password"><input type="password"><input type="email"><a class="card-link" href="#">Link</a><a class="card-link" href="#">Link</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/stylish-portfolio.js"></script>
 </body>
 
 </html>

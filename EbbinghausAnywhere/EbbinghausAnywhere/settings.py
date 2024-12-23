@@ -133,7 +133,7 @@ AUTHENTICATION_BACKENDS = (
 # 登录和退出后的跳转路径
 LOGIN_URL = '/accounts/login/'  # 用户未登录时，跳转的登录页面
 LOGOUT_URL = '/accounts/logout/'  # 退出登录后跳转的页面
-LOGIN_REDIRECT_URL = '/'  # 登录成功后跳转的页面
+LOGIN_REDIRECT_URL = 'home'  # 登录成功后跳转的页面
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGGING = {

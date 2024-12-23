@@ -31,3 +31,9 @@
     }
 }
 </style>
+
+.table-transparent {
+    background-color: transparent; /* 设置背景颜色为透明 */
+    color: inherit; /* 继承文字颜色 */
+    border-collapse: collapse; /* 合并边框 */
+  }

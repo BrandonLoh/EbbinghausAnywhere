@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+<header class="d-flex masthead m-0 py-2" style="background-image: url('{% static 'img/bg-masthead.jpg' %}');">
+    <div class="container my-auto text-center">
+        <h1 class="mb-1">About Ebbinghaus Anywhere</h1>
+        <h3 class="mb-5"><em>Learn More About Us</em></h3>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Our Mission</h2>
+        <p class="text-center">
+            Ebbinghaus Anywhere is a free and open memory tool designed to help you enhance your learning and retention. 
+            Inspired by the Ebbinghaus forgetting curve, our platform provides personalized tools to make the process of 
+            learning effective and enjoyable.
+        </p>
+        <hr>
+        <h2 class="text-center mb-4">Contact Us</h2>
+        <p class="text-center">Have questions? Feel free to reach out to us at <a href="mailto:lubaixun@gmail.com">lubaixun@gmail.com</a>.</p>
+    </div>
+</section>
+{% endblock %}

@@ -1,40 +1,83 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Your List</title>
-</head>
-<body>
-    <h1>Your Item List</h1>
- 
-    {% if page_obj %}
-      <ul>
-        {% for item in page_obj %}
-          <li>
-            <a href="{% url 'item-detail' item.id %}">{{ item.item }}</a>
-            - {{ item.inputDate }}
-          </li>
-        {% endfor %}
-      </ul>
-      
-      <div class="pagination">
-        <span class="step-links">
-          {% if page_obj.has_previous %}
-            <a href="?page=1">first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-          {% endif %}
-  
-          <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-          </span>
-  
-          {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last</a>
-          {% endif %}
-        </span>
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block content %}
+<!-- Header with Background Image -->
+<div class="bg-container" style="background-image: url('{% static 'img/bg-masthead.jpg' %}'); background-size: cover; background-position: center; width: 100%; height: 80px;">
+  <div class="container text-center">
+      <h1 class="mx-auto mb-0" style="font-size: 3.5vw; line-height: 1.2; color: white;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);">
+          Item List
+      </h1>
+  </div>
+</div>
+
+<!-- Category Statistics Section with Consistent Style -->
+<section id="category-stats" class="content-section bg-primary text-white py-5">
+  <div class="container">
+      <!-- <h2 class="text-center mb-4" style="font-size: 2.5rem;">Category Statistics</h2> -->
+      <div class="row justify-content-center">
+          <div class="col-12 col-md-8">
+              <ul class="list-group">
+                  {% for category in category_stats %}
+                      <li class="list-group-item bg-primary text-white border-light">
+                          <strong>{{ category.category__name }}:</strong> {{ category.count }} Items
+                      </li>
+                  {% endfor %}
+              </ul>
+          </div>
       </div>
-    {% else %}
-      <p>No items found.</p>
-    {% endif %}
-</body>
-</html>
+  </div>
+</section>
+
+<!-- Blue Section for Item List with Table -->
+<section id="item-list" class="content-section bg-primary text-white py-5">
+  <div class="container">
+      <!-- <h2 class="text-center mb-4" style="font-size: 2.5rem;">Item List</h2> -->
+      <div class="row justify-content-center">
+          <div class="col-12 col-md-8">
+              {% if page_obj %}
+              <!-- Item Table with Blue Background, Light Font and Rounded Borders -->
+              <table class="table table-sm table-transparent" >
+                  <thead>
+                      <tr>
+                          <th scope="col">Item</th>
+                          <th scope="col">Category</th>
+                          <th scope="col">Input Date</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for item in page_obj %}
+                      <tr>
+                          <td><a href="{% url 'item-detail' item.id %}" >{{ item.item }}</a></td>
+                          <td>{{ item.category.name }}</td>
+                          <td>{{ item.inputDate }}</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+
+              <!-- Pagination -->
+              <div class="pagination mt-4">
+                  <span class="step-links">
+                      {% if page_obj.has_previous %}
+                      <a href="?page=1" class="text-light">first</a>
+                      <a href="?page={{ page_obj.previous_page_number }}" class="text-light">previous</a>
+                      {% endif %}
+                      <span class="current text-light">
+                          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                      </span>
+                      {% if page_obj.has_next %}
+                      <a href="?page={{ page_obj.next_page_number }}" class="text-light">next</a>
+                      <a href="?page={{ page_obj.paginator.num_pages }}" class="text-light">last</a>
+                      {% endif %}
+                  </span>
+              </div>
+              {% else %}
+              <div class="alert alert-info mt-4">
+                  No items found.
+              </div>
+              {% endif %}
+          </div>
+      </div>
+  </div>
+</section>
+{% endblock %}

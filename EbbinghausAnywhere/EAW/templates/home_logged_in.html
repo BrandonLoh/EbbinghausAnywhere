@@ -1,67 +1,47 @@
-<!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
+{% extends "base_generic.html" %}
+{% load static %}
+{% block content %}
+<header class="d-flex masthead m-0 py-2 align-items-center" 
+        style="background-image: url('{% static 'img/bg-masthead.jpg' %}'); height: 50vh;"> 
+    <div class="container text-center">
+        <h2 class="mx-auto mb-3" style="font-size: 4vw; line-height: 1.2;">
+            <span>Welcome to&nbsp;</span><em>{{ username }}'s</em><br>Ebbinghaus Anywhere!
+        </h2>
+        <p class="text-center" style="font-size: 2vw; line-height: 1.5;">
+            {{ username }} learned <strong>{{ total_items }}</strong> items during the <strong>{{ days_since_first_item }}</strong> days with Ebbinghaus Anywhere
+        </p>
+    </div>
+</header>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Home - Brand</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/Source%20Sans%20Pro.css">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
-</head>
-
-<body id="page-top"><a class="menu-toggle rounded" href="#"><i class="fa fa-bars"></i></a>
-    <nav class="navbar navbar-expand navbar-light" id="sidebar-wrapper">
-        <div class="container"><button data-bs-toggle="collapse" class="navbar-toggler d-none" data-bs-target="#"></button>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav sidebar-nav" id="sidebar-nav">
-                    <li class="nav-item sidebar-brand"><a class="nav-link active js-scroll-trigger" href="#page-top">Brand</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#page-top">Home</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#services">Services</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#portfolio">Portfolio</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
-                </ul>
+<section id="services" class="content-section bg-primary text-white text-center py-3" style="min-height: 40vh;">
+    <div class="container">
+        <div class="content-section-heading">
+            <h2 class="mb-4" style="font-size: 3vw;">What We Can Do</h2>
+        </div>
+        <div class="row">
+            <div class="col-6 col-md-3 mb-4">
+                <span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-notebook"></i></span>
+                <h4 style="font-size: 1.8vw;"><strong>All Items</strong></h4>
+                <p class="mb-0 text-faded" style="font-size: 1.2vw;">Looks great on any screen size!</p>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-pencil"></i></span>
+                <h4 style="font-size: 1.8vw;"><strong>Input</strong></h4>
+                <p class="mb-0 text-faded" style="font-size: 1.2vw;">Freshly redesigned for Bootstrap 5.</p>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-calendar"></i></span>
+                <h4 style="font-size: 1.8vw;"><strong>Daily Review</strong></h4>
+                <p class="mb-0 text-faded" style="font-size: 1.2vw;">
+                    <span>Millions of users&nbsp;</span><i class="fa fa-heart"></i><span>&nbsp;us!</span>
+                </p>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+                <span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-magnifier"></i></span>
+                <h4 style="font-size: 1.8vw;"><strong>Search</strong></h4>
+                <p class="mb-0 text-faded" style="font-size: 1.2vw;">I mustache you a question...</p>
             </div>
         </div>
-    </nav>
-    <header class="d-flex masthead" style="background-image: url('assets/img/bg-masthead.jpg');padding-top: 0px;margin-bottom: -87px;height: 851px;">
-        <div class="container text-center" style="height: 440px;margin-top: 161px;">
-            <h2 class="mx-auto mb-5" style="margin-top: 11px;"><span style="font-size: 56px;">Welcome to&nbsp;</span><em style="font-size: 56px;">Ellie's</em><span style="font-size: 56px;"><br>Ebbinghaus Anywhere!</span></h2>
-            <div class="mx-auto mx-sm-auto mx-md-auto mx-lg-auto mx-xl-auto mx-xxl-auto">
-                <p class="d-flex d-lg-flex justify-content-xl-center" style="text-align: right;font-size: 34px;"><br>Ellie learned 5325 items during the 525 days with Ebbinghaus Anywhere</p>
-            </div>
-        </div>
-    </header>
-    <section id="services" class="content-section bg-primary text-white text-center">
-        <div class="container">
-            <div class="content-section-heading">
-                <h3 class="text-secondary mb-0">Services</h3>
-                <h2 class="mb-5">What We Can Do</h2>
-            </div>
-            <div class="row">
-                <div class="col-6 col-md-6 col-lg-3 mb-5 mb-lg-0"><span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-notebook"></i></span>
-                    <h4><strong>All Items</strong></h4>
-                    <p class="mb-0 text-faded">Looks great on any screen size!</p>
-                </div>
-                <div class="col-6 col-md-6 col-lg-3 mb-5 mb-lg-0"><span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-pencil"></i></span>
-                    <h4><strong>Input</strong></h4>
-                    <p class="mb-0 text-faded">Freshly redesigned for Bootstrap 5.</p>
-                </div>
-                <div class="col-6 col-md-6 col-lg-3 mb-5 mb-lg-0"><span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-calendar"></i></span>
-                    <h4><strong>Daily Review</strong></h4>
-                    <p class="mb-0 text-faded"><span>Milions of users&nbsp;</span><i class="fa fa-heart"></i><span>&nbsp;us!</span></p>
-                </div>
-                <div class="col-6 col-md-6 col-lg-3 mb-5 mb-lg-0"><span class="mx-auto service-icon rounded-circle mb-3"><i class="icon-magnifier"></i></span>
-                    <h4><strong>Search</strong></h4>
-                    <p class="mb-0 text-faded">I mustache you a question...</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/stylish-portfolio.js"></script>
-</body>
-
-</html>
+    </div>
+</section>
+{% endblock %}

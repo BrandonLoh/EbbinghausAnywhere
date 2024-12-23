@@ -118,14 +118,32 @@ def user_profile(request):
     return render(request, 'users/profile.html', context)
 
 
+from django.utils.timezone import now
+
 def home(request):
     # 检查用户是否登录
     if request.user.is_authenticated:
+        # 获取当前用户的所有 items
+        items = Item.objects.filter(user=request.user)
+        # 统计数据
+        total_items = items.count()
+        if total_items > 0:
+            first_item_date = items.order_by('inputDate').first().inputDate
+            days_since_first_item = (now().date() - first_item_date).days
+        else:
+            days_since_first_item = 0
+        
+        context = {
+            'username': request.user.username,
+            'total_items': total_items,
+            'days_since_first_item': days_since_first_item,
+        }
         # 用户已登录，返回登录后的首页
-        return render(request, 'home_logged_in.html')
+        return render(request, 'home_logged_in.html', context)
     else:
         # 用户未登录，返回未登录的首页
         return render(request, 'home_logged_out.html')
+
 
 @login_required
 def index(request):
@@ -156,6 +174,9 @@ def item_list(request):
     # 获取当前登录用户的所有 Item
     item_list = Item.objects.filter(user=request.user).order_by('-inputDate')
 
+    # 统计每个类别下的条目数量
+    category_stats = item_list.values('category__name').annotate(count=Count('category')).order_by('-count')
+
     # 确保 item_list 不为空时才进行分页
     if item_list.exists():
         paginator = Paginator(item_list, 50)  # 每页 50 个
@@ -165,8 +186,8 @@ def item_list(request):
         # 如果 item_list 为空，设置 page_obj 为一个空列表或自定义的对象
         page_obj = []
 
-    # 渲染模板，传递分页对象
-    return render(request, 'list.html', {'page_obj': page_obj})
+    # 渲染模板，传递分页对象和类别统计信息
+    return render(request, 'list.html', {'page_obj': page_obj, 'category_stats': category_stats})
 
 
 @method_decorator(login_required, name='dispatch')  # 确保用户已登录
@@ -655,6 +676,7 @@ def compare_lines(existing_lines, new_lines):
             result.append(new_line)
 
     return "\n".join(result)
-
+def about(request):
+    return render(request, 'about.html')  # 渲染 about.html 页面
 
 

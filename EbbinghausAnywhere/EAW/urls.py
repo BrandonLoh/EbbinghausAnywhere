@@ -6,12 +6,9 @@ from .views import ItemDetailView
 
 urlpatterns = [
     path('', views.home, name='home'), # Home view
-    #path('', views.index, name='index'),  # Index view
-    # 将 'home' 指向 'index' 页面
-    path('home/', views.index, name='home'),  # Home view，直接指向 index
     # 用户认证相关的URL
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),  # 登录
-    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),  # 退出
+    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('accounts/password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),  # 更改密码
     path('accounts/password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),  # 密码更改成功
     path('accounts/password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),  # 找回密码
@@ -39,5 +36,6 @@ urlpatterns = [
     path('profile/', views.user_profile, name='profile'),
     path('export_user_data/', views.export_user_data_to_excel, name='export_user_data'),
     path('import_user_data/', views.import_items_from_excel, name='import_user_data'),
+    path('about/', views.about, name='about'),  # 关于页面
 
 ]

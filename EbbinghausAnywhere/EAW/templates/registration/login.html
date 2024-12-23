@@ -1,14 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-</body>
-</html>
+{% extends "base_generic.html" %}
+{% load static %}
+{% block title %}<title>Login - Ebbinghaus Anywhere</title>{% endblock %}
+{% block content %}
+<header class="d-flex justify-content-center align-items-center" style="background-image: url('{% static 'img/bg-callout.jpg' %}'); height: 100vh; background-size: cover; background-position: center;">
+    <div class="container">
+        <div class="card p-4 mx-auto text-light" style="width: 100%; max-width: 400px; background-color: rgba(0, 0, 0, 0.8); border-radius: 10px;">
+            <h2 class="text-center mb-4">Login</h2>
+            <form method="post">
+                {% csrf_token %}
+                <!-- Username -->
+                <div class="mb-3">
+                    <input type="text" name="username" class="form-control" placeholder="Username or Email" id="username" required>
+                </div>
+                <!-- Password -->
+                <div class="mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Password" id="password" required>
+                </div>
+                <!-- Remember Me -->
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="remember">
+                    <label class="form-check-label" for="remember">
+                        Remember me
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+            <p class="text-center mt-3">
+                Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none text-light">Register</a>
+            </p>
+            <p class="text-center mt-1">
+                <a href="{% url 'password_reset' %}" class="text-decoration-none text-light">Forgot Password?</a>
+            </p>
+        </div>
+    </div>
+</header>
+{% endblock %}

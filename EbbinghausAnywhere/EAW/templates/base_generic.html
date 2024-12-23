@@ -35,33 +35,90 @@
 
     <a class="menu-toggle rounded" href="#"><i class="fa fa-bars"></i></a>
     <nav class="navbar navbar-expand navbar-light" id="sidebar-wrapper">
-        <div class="container"><button data-bs-toggle="collapse" class="navbar-toggler d-none" data-bs-target="#sidebar-nav"></button>
+        <div class="container">
+            <button data-bs-toggle="collapse" class="navbar-toggler d-none" data-bs-target="#sidebar-nav"></button>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav sidebar-nav" id="sidebar-nav">
-                    <li class="nav-item sidebar-brand"><a class="nav-link active js-scroll-trigger" href="#page-top">Brand</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#page-top">Home</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#services">Services</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#portfolio">Portfolio</a></li>
-                    <li class="nav-item sidebar-nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
+                    <li class="nav-item sidebar-brand">
+                        <a class="nav-link active js-scroll-trigger" href="{% url 'home' %}">Ebbinghaus Anywhere</a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                    <!-- 用户已登录时的导航 -->
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="{% url 'item-list' %}">All Items</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="{% url 'review-home' %}">Review</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="{% url 'input-view' %}">Input</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="{% url 'profile' %}">Profile</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a href="#" class="nav-link js-scroll-trigger" id="logout-link">Logout</a>
+                    </li>
+                    <script>
+                        document.getElementById('logout-link').addEventListener('click', function(e) {
+                            e.preventDefault();  // 防止页面跳转
+                    
+                            // 创建一个隐藏的表单，用于发起 POST 请求
+                            var form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = '{% url "logout" %}';  // 填写登出URL
+                    
+                            // 创建一个隐藏的 csrf_token 输入框
+                            var csrfToken = document.createElement('input');
+                            csrfToken.type = 'hidden';
+                            csrfToken.name = 'csrfmiddlewaretoken';
+                            csrfToken.value = '{{ csrf_token }}';
+                            form.appendChild(csrfToken);
+                    
+                            // 将表单添加到页面中并提交
+                            document.body.appendChild(form);
+                            form.submit();
+                        });
+                    </script>
+                    {% else %}
+                    <!-- 用户未登录时的导航 -->
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="{% url 'register' %}">Register</a>
+                    </li>
+                    {% endif %}
+    
+                    <!-- 公共内容 -->
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="mailto:lubaixun@gmail.com">Contact</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
+    
 
     {% block content %}
     {% endblock %}
 
-    <footer class="footer text-center">
+    <footer class="footer text-center" style="padding: 10px 0; background-color: #f8f9fa;">
         <div class="container">
-            <ul class="list-inline mb-5">
+            <ul class="list-inline mb-2" style="margin: 0; padding: 0;">
                 <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-login"></i></a></li>
                 <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-present"></i></a></li>
                 <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-envelope-open"></i></a></li>
             </ul>
-            <p class="text-muted mb-0 small">Copyright &nbsp;© Brandon Lu 2024</p>
-        </div><a class="js-scroll-trigger scroll-to-top rounded" href="#page-top"><i class="fa fa-angle-up"></i></a>
+            <p class="text-muted mb-0 small" style="font-size: 14px; margin-top: 5px;">Copyright &nbsp;© Brandon Lu 2024</p>
+        </div>
+        <a class="js-scroll-trigger scroll-to-top rounded" href="#page-top" style="bottom: 10px;"><i class="fa fa-angle-up"></i></a>
     </footer>
+    
 
     <!-- 引入 Bootstrap 和自定义 JavaScript -->
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>

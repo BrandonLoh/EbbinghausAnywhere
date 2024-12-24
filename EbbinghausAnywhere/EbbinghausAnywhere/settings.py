@@ -99,6 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -132,24 +133,32 @@ AUTHENTICATION_BACKENDS = (
 
 # 登录和退出后的跳转路径
 LOGIN_URL = '/accounts/login/'  # 用户未登录时，跳转的登录页面
-LOGOUT_URL = '/accounts/logout/'  # 退出登录后跳转的页面
+LOGOUT_URL = 'home'  # 退出登录后跳转的页面
 LOGIN_REDIRECT_URL = 'home'  # 登录成功后跳转的页面
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
-        'console': {
+        'file': {
             'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'verbose',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': 'CRITICAL',
-            'propagate': False,
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }

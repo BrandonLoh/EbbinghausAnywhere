@@ -1,5 +1,8 @@
 from django import forms
 from .models import Category, Item, ReviewDay
+from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 # Category的ModelForm
 # Category的ModelForm
@@ -77,3 +80,50 @@ class EmailUpdateForm(forms.Form):
         })
     )
 
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(
+        required=True, 
+        help_text="Please enter a valid email address."
+    )
+    first_name = forms.CharField(
+        max_length=30, 
+        required=False, 
+        help_text="Enter a nickname or first name (optional)."
+    )
+    last_name = forms.CharField(
+        max_length=30, 
+        required=False, 
+        help_text="Enter your last name (optional)."
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("This email is already registered, please use another one.")
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Username already exists, please choose another username.")
+        return username
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 != password2:
+            raise ValidationError('Passwords do not match.')
+        return password2
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data.get('first_name')  # Save the nickname
+        user.last_name = self.cleaned_data.get('last_name')  # Save the surname
+        if commit:
+            user.save()
+        return user

@@ -7,7 +7,8 @@ from .views import ItemDetailView
 urlpatterns = [
     path('', views.home, name='home'), # Home view
     # 用户认证相关的URL
-    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),  # 登录
+    # path('accounts/login/', auth_views.LoginView.as_view(), name='login'),  # 登录
+    path('accounts/login/', views.custom_login, name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('accounts/password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),  # 更改密码
     path('accounts/password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),  # 密码更改成功

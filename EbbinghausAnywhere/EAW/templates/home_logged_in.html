@@ -5,10 +5,10 @@
         style="background-image: url('{% static 'img/bg-masthead.jpg' %}'); height: 50vh;"> 
     <div class="container text-center">
         <h2 class="mx-auto mb-3" style="font-size: 4vw; line-height: 1.2;">
-            <span>Welcome to&nbsp;</span><em>{{ username }}'s</em><br>Ebbinghaus Anywhere!
+            <span>Welcome to&nbsp;</span><em>{{ display_name }}'s</em><br>Ebbinghaus Anywhere!
         </h2>
         <p class="text-center" style="font-size: 2vw; line-height: 1.5;">
-            {{ username }} has learned <strong>{{ total_items }}</strong> items in the <strong>{{ days_since_first_item }}</strong> days spent with Ebbinghaus Anywhere
+            {{ display_name }} has learned <strong>{{ total_items }}</strong> items in the <strong>{{ days_since_first_item }}</strong> days spent with Ebbinghaus Anywhere
         </p>
     </div>
 </header>

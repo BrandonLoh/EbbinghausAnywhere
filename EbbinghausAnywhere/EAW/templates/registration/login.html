@@ -1,11 +1,21 @@
 {% extends "base_generic.html" %}
 {% load static %}
-{% block title %}<title>Login - Ebbinghaus Anywhere</title>{% endblock %}
+{% block title %}<title>Log in - Ebbinghaus Anywhere</title>{% endblock %}
 {% block content %}
 <header class="d-flex justify-content-center align-items-center" style="background-image: url('{% static 'img/bg-callout.jpg' %}'); height: 100vh; background-size: cover; background-position: center;">
     <div class="container">
         <div class="card p-4 mx-auto text-light" style="width: 100%; max-width: 400px; background-color: rgba(0, 0, 0, 0.8); border-radius: 10px;">
-            <h2 class="text-center mb-4">Login</h2>
+            <h2 class="text-center mb-4">Log in</h2>
+            
+            <!-- 显示错误消息 -->
+            {% if messages %}
+                <div class="alert alert-danger">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
             <form method="post">
                 {% csrf_token %}
                 <!-- Username -->
@@ -23,10 +33,10 @@
                         Remember me
                     </label>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <button type="submit" class="btn btn-primary w-100">Log in</button>
             </form>
             <p class="text-center mt-3">
-                Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none text-light">Register</a>
+                Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none text-light">Sign up!</a>
             </p>
             <p class="text-center mt-1">
                 <a href="{% url 'password_reset' %}" class="text-decoration-none text-light">Forgot Password?</a>
@@ -35,3 +45,4 @@
     </div>
 </header>
 {% endblock %}
+

@@ -6,24 +6,27 @@ from datetime import datetime
 from datetime import timedelta
 from django.utils.timezone import now
 from django import forms
-from .forms import InputForm, EmailUpdateForm
+from .forms import InputForm, EmailUpdateForm, CustomUserCreationForm
 from django.utils.decorators import method_decorator
 from django.views.generic.detail import DetailView
 from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.models import Group
+from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, JsonResponse
 from django.http import HttpResponse
 from django.urls import reverse
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 import json
 import csv
 from time import sleep
@@ -45,44 +48,67 @@ logger = logging.getLogger(__name__)
 from .models import Item, Proficiency, Category, ReviewDay
 
 def custom_login(request):
-    return render(request, 'registration/login.html')  # 指向自定义的模板文件
+    print(request)
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        # 使用 authenticate 进行身份验证
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            # 如果用户验证通过，则登录并重定向
+            login(request, user)
+            return redirect('home')  # 登录成功后可以重定向到首页或其他页面
+        else:
+            # 如果用户名或密码错误，使用消息框架显示错误信息
+            messages.error(request, "用户名或密码无效，请检查后重试。")
 
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True, help_text="请输入有效的邮箱地址")
+    return render(request, 'registration/login.html')
 
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-        return user
 
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
+            try:
+                user = form.save()
+                username = form.cleaned_data.get('username')
 
-            # 加入 Public 组，设置默认值等
-            public_group, created = Group.objects.get_or_create(name='Public')
-            user.groups.add(public_group)
-            user.is_staff = True
-            user.save()
+                # 加入 Public 组
+                public_group, created = Group.objects.get_or_create(name='Public')
+                user.groups.add(public_group)
+                user.is_staff = True
+                user.save()
 
-            Category.objects.create(user=user, name="单词", sort_order=1, is_default=True)
+                # 创建默认类别和复习计划
+                Category.objects.create(user=user, name="单词", sort_order=1, is_default=True)
+                review_days = [1, 2, 4, 7, 15, 30, 90, 180, 365]
+                ReviewDay.objects.bulk_create(
+                    [ReviewDay(user=user, day=day) for day in review_days]
+                )
 
-            review_days = [1, 2, 4, 7, 15, 30, 90, 180, 365]
-            ReviewDay.objects.bulk_create(
-                [ReviewDay(user=user, day=day) for day in review_days]
-            )
+                messages.success(request, f'Account {username} created successfully!')
+                return redirect('login')
 
-            messages.success(request, f'Account created for {username}!')
-            return redirect('login')
+            except Exception as e:
+                # 捕获异常并记录日志
+                logger.error(f"Error during registration: {e}")
+                messages.error(request, f"Registration failed: {e}")  # 临时将具体错误显示在页面上，便于调试
+        else:
+            # 手动处理表单错误，构建一个HTML字符串，并替换 password2 为 Password confirmation
+            error_messages = []
+            for field, errors in form.errors.items():
+                for error in errors:
+                    # 替换 password2 为 Password confirmation
+                    if field == 'password2':
+                        error = error.replace('password2', 'Password confirmation')
+                    error_messages.append(f"<p>{error}</p>")
+
+            # 将所有错误信息传递到模板
+            form_errors = "".join(error_messages)
+            logger.warning(f"Form validation failed: {form.errors}")
+            messages.error(request, f"<p>Please fix the following errors: {form_errors}</p>")
     else:
         form = CustomUserCreationForm()
 
@@ -133,8 +159,18 @@ def home(request):
         else:
             days_since_first_item = 0
         
+        # 判断如何显示用户名
+        if request.user.first_name and request.user.last_name:
+            display_name = f"{request.user.first_name} {request.user.last_name}"  # 合并 first_name 和 last_name
+        elif request.user.first_name:
+            display_name = request.user.first_name  # 只有 first_name
+        elif request.user.last_name:
+            display_name = request.user.last_name  # 只有 last_name
+        else:
+            display_name = request.user.username  # 都没有，使用 username
+        
         context = {
-            'username': request.user.username,
+            'display_name': display_name,  # 修改为 display_name
             'total_items': total_items,
             'days_since_first_item': days_since_first_item,
         }

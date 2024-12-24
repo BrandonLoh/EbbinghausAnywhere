@@ -23,7 +23,7 @@
             <p class="text-warning">未提供音标信息。</p>
         {% endif %}
     {% else %}
-        <p class="text-muted">此项不是单词。</p>
+        <!-- <p class="text-muted">此项不是单词。</p> -->
     {% endif %}
 
     <!-- 播放语音 -->
@@ -49,25 +49,12 @@
     </div>
     <hr>
     <!-- 返回按钮 -->
-    <style>
-        .social-link {
-            background-color: #39738d !important;  /* 强制设置背景色 */
-            /* padding: 10px !important;           确保按钮大小合适 */
-            display: inline-block !important;    /* 确保是块级元素 */
-            /* border-radius: 50% !important;       确保圆形效果 */
-            text-align: center !important;       /* 确保图标居中 */
-        }
-        .social-link i {
-            color: white !important;  /* 强制设置图标颜色为白色 */
-        }
-    </style>
-    <div class="container">
-        <ul class="list-inline mb-2" style="margin: 0; padding: 0;">
-        <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="javascript:history.back()"><i class="icon-action-undo"></i></a></li>
-        </ul>
+    <div>
+        <!-- 蓝色背景按钮 -->
+        <a href="javascript:history.back()" class="back-btn blue-bg">
+            <i class="bi bi-arrow-left"></i>
+        </a>
     </div>
     </div>
-
-
 </div>
 {% endblock %}

@@ -1,46 +1,71 @@
 {% extends "base_generic.html" %}
 {% load static %}
-{% block title %}<title>Register - Ebbinghaus Anywhere</title>{% endblock %}
+{% block title %}<title>Sign up - Ebbinghaus Anywhere</title>{% endblock %}
 {% block content %}
 <header class="d-flex justify-content-center align-items-center" style="background-image: url('{% static 'img/bg-callout.jpg' %}'); height: 100vh; background-size: cover; background-position: center;">
     <div class="container">
         <div class="card p-4 mx-auto text-light" style="width: 100%; max-width: 400px; background-color: rgba(0, 0, 0, 0.8); border-radius: 10px;">
-            <h2 class="text-center mb-4">Register</h2>
+            <h2 class="text-center mb-4">Sign up</h2>
+                <!-- 错误提示区域 -->
+                {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ message | safe}}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <form method="post">
                 {% csrf_token %}
                 <!-- Username -->
                 <div class="mb-3 position-relative">
-                    <input type="text" name="username" class="form-control" placeholder="Username" id="username" required>
+                    <input type="text" name="username" class="form-control" placeholder="Username" id="username" autocomplete="off" required>
                     <span class="position-absolute top-50 end-0 translate-middle-y me-3" data-bs-toggle="tooltip" title="Username requirements: max 150 characters, letters, numbers, and @/./+/-/_ only.">
+                        <i class="bi bi-info-circle text-light"></i>
+                    </span>
+                </div>
+                <!-- First Name (Nickname) -->
+                <div class="mb-3 position-relative">
+                    <input type="text" name="first_name" class="form-control" placeholder="First name or nikename (optional)" id="first_name" autocomplete="off">
+                    <span class="position-absolute top-50 end-0 translate-middle-y me-3" data-bs-toggle="tooltip" title="Enter a nickname or first name(optional).">
+                        <i class="bi bi-info-circle text-light"></i>
+                    </span>
+                </div>
+                <!-- Last Name -->
+                <div class="mb-3 position-relative">
+                    <input type="text" name="last_name" class="form-control" placeholder="Last Name (optional)" id="last_name" autocomplete="off">
+                    <span class="position-absolute top-50 end-0 translate-middle-y me-3" data-bs-toggle="tooltip" title="Enter your last name (optional).">
                         <i class="bi bi-info-circle text-light"></i>
                     </span>
                 </div>
                 <!-- Email -->
                 <div class="mb-3 position-relative">
-                    <input type="email" name="email" class="form-control" placeholder="Email" id="email" required>
+                    <input type="email" name="email" class="form-control" placeholder="Email" id="email" autocomplete="off" required>
                     <span class="position-absolute top-50 end-0 translate-middle-y me-3" data-bs-toggle="tooltip" title="Please enter a valid email address.">
                         <i class="bi bi-info-circle text-light"></i>
                     </span>
                 </div>
                 <!-- Password -->
                 <div class="mb-3 position-relative">
-                    <input type="password" name="password1" class="form-control" placeholder="Password" id="password" required>
+                    <input type="password" name="password1" class="form-control" placeholder="Password" id="password" autocomplete="off" required>
                     <span class="position-absolute top-50 end-0 translate-middle-y me-3" data-bs-toggle="tooltip" title="Password must be at least 8 characters and not too common or similar to your personal info.">
                         <i class="bi bi-info-circle text-light"></i>
                     </span>
                 </div>
                 <!-- Confirm Password -->
                 <div class="mb-3">
-                    <input type="password" name="password2" class="form-control" placeholder="Confirm Password" required>
+                    <input type="password" name="password2" class="form-control" placeholder="Confirm Password" autocomplete="off" required>
                 </div>
                 <!-- Terms of Service -->
                 <div class="form-check mb-3">
-                    <input type="checkbox" class="form-check-input" id="terms" required>
+                    <input type="checkbox" class="form-check-input" id="terms" autocomplete="off" required>
                     <label class="form-check-label" for="terms">
                         I agree to the Privacy Policy and Terms of Service
                     </label>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Register</button>
+                <button type="submit" class="btn btn-primary w-100">Sign up!</button>
             </form>
             <p class="text-center mt-3">
                 Already have an account? <a href="{% url 'login' %}" class="text-decoration-none text-light">Login</a>
@@ -48,7 +73,25 @@
         </div>
     </div>
 </header>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        
+        usernameInput.addEventListener('blur', function () {
+            if (this.value.length > 150) {
+                alert("Username cannot exceed 150 characters!");
+            }
+        });
 
+        emailInput.addEventListener('blur', function () {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(this.value)) {
+                alert("Please enter a valid email address!");
+            }
+        });
+    });
+</script>
 <script>
     // Initialize Bootstrap tooltips
     document.addEventListener('DOMContentLoaded', function () {

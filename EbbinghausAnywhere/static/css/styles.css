@@ -30,10 +30,73 @@
         display: none;
     }
 }
-</style>
 
 .table-transparent {
     background-color: transparent; /* 设置背景颜色为透明 */
     color: inherit; /* 继承文字颜色 */
     border-collapse: collapse; /* 合并边框 */
   }
+
+
+  .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      font-size: 2rem;
+      text-decoration: none;
+      margin: 1rem;
+      transition: all 0.3s ease-in-out;
+  }
+
+  .back-btn i {
+      transition: transform 0.3s ease-in-out;
+  }
+
+  /* 蓝色背景的样式 */
+  .blue-bg {
+      background-color: #1d809f;
+      color: #fff;
+  }
+
+  .blue-bg:hover {
+      background-color: #eab10e;
+      color: #1d809f;
+  }
+
+  .blue-bg:hover i {
+      transform: translateX(-3px);
+  }
+
+  /* 黄色背景的样式 */
+  .yellow-bg {
+      background-color: #eab10e;
+      color: #fff;
+  }
+
+  .yellow-bg:hover {
+      background-color: #fff;
+      color: #1d809f;
+  }
+
+  .yellow-bg:hover i {
+      transform: translateX(-3px);
+  }
+
+  /* 白色背景的样式 */
+  .white-bg {
+      background-color: #fff;
+      color: #1d809f;
+  }
+
+  .white-bg:hover {
+      background-color: #1d809f;
+      color: #eab10e;
+  }
+
+  .white-bg:hover i {
+      transform: translateX(-3px);
+  }
+</style>

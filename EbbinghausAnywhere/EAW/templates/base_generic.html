@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
     <!-- MathJax 配置 -->
-    <!-- <script>
+    <script>
         window.MathJax = {
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -25,10 +25,10 @@
             },
         };
     </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> 
 
     <!-- 引入 Chart.js -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 <body id="page-top" class="m-0 p-0">
@@ -110,7 +110,7 @@
     <footer class="footer text-center" style="padding: 10px 0; background-color: #f8f9fa;">
         <div class="container">
             <ul class="list-inline mb-2" style="margin: 0; padding: 0;">
-                <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-login"></i></a></li>
+                <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-logout"></i></a></li>
                 <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-present"></i></a></li>
                 <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="#"><i class="icon-envelope-open"></i></a></li>
             </ul>
@@ -128,11 +128,11 @@
 
 </body>
 
-<!-- <script>
+<script>
     // 等待页面加载完成后渲染 MathJax
     document.addEventListener("DOMContentLoaded", function () {
         MathJax.typeset();
     });
-</script> -->
+</script>
 <script src="{% static 'js/stylish-portfolio.js' %}"></script>
 </html>

@@ -1,15 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Your List</title>
-</head>
-<body>
-<h1>Item Detail</h1>
-<p><strong>Item:</strong> {{ object.item }}</p>
-<p><strong>Content:</strong> {{ object.content }}</p>
-<p><strong>Input Date:</strong> {{ object.inputDate }}</p>
-<p><strong>Initial Date:</strong> {{ object.initDate }}</p>
-<p><strong>Proficiency:</strong> {{ object.get_proficiency_display }}</p>
-<p><strong>Category:</strong> {{ object.category.name }}</p>
-</body>
-</html>
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block content %}
+<div class="bg-container" style="background-image: url('{% static 'img/bg-callout.jpg' %}'); background-size: cover; background-position: center; height: 100vh; display: flex; justify-content: center; align-items: center;">
+    <div class="card text-center shadow-lg" style="width: 80%; max-width: 600px; background-color: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 10px;">
+        <h2 class="card-title fw-bold">{{ object.item }}</h2>
+    <!-- 显示音标 -->
+    {% if object.category.name == '单词' %}
+        {% if object.uk_phonetic or object.us_phonetic %}
+            <div class="mt-3">
+                {% if object.uk_phonetic %}
+                    <p class="text-muted mb-1">
+                        <strong>英式音标:</strong> /{{ object.uk_phonetic }}/
+                    </p>
+                {% endif %}
+                {% if object.us_phonetic %}
+                    <p class="text-muted mb-1">
+                        <strong>美式音标:</strong> /{{ object.us_phonetic }}/
+                    </p>
+                {% endif %}
+            </div>
+        {% else %}
+            <p class="text-warning">未提供音标信息。</p>
+        {% endif %}
+    {% else %}
+        <p class="text-muted">此项不是单词。</p>
+    {% endif %}
+
+    <!-- 播放语音 -->
+    {% if object.src_tts %}
+        <div class="mt-3">
+            <audio controls>
+                <source src="{{ object.src_tts }}" type="audio/mpeg">
+                您的浏览器不支持音频播放。
+            </audio>
+        </div>
+    {% endif %}
+
+    <hr>
+
+    <!-- 详细信息 -->
+    <div class="text-start">
+        <p><strong>Content:</strong></p>
+        <p style="white-space: pre-line">{{ object.content |safe}}</p>
+        <p><strong>Input Date:</strong> {{ object.inputDate }}</p>
+        <p><strong>Initial Date:</strong> {{ object.initDate }}</p>
+        <p><strong>Proficiency:</strong> {{ object.get_proficiency_display }}</p>
+        <p><strong>Category:</strong> {{ object.category.name }}</p>
+    </div>
+    <hr>
+    <!-- 返回按钮 -->
+    <style>
+        .social-link {
+            background-color: #39738d !important;  /* 强制设置背景色 */
+            /* padding: 10px !important;           确保按钮大小合适 */
+            display: inline-block !important;    /* 确保是块级元素 */
+            /* border-radius: 50% !important;       确保圆形效果 */
+            text-align: center !important;       /* 确保图标居中 */
+        }
+        .social-link i {
+            color: white !important;  /* 强制设置图标颜色为白色 */
+        }
+    </style>
+    <div class="container">
+        <ul class="list-inline mb-2" style="margin: 0; padding: 0;">
+        <li class="list-inline-item">&nbsp;<a class="link-light social-link rounded-circle" href="javascript:history.back()"><i class="icon-action-undo"></i></a></li>
+        </ul>
+    </div>
+    </div>
+
+
+</div>
+{% endblock %}

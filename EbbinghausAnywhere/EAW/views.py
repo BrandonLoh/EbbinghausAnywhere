@@ -145,29 +145,29 @@ def home(request):
         return render(request, 'home_logged_out.html')
 
 
-@login_required
-def index(request):
-    """
-    Index view to show the total count of items and the count for each category.
-    """
-    # 获取当前登录用户
-    user = request.user
+# @login_required
+# def index(request):
+#     """
+#     Index view to show the total count of items and the count for each category.
+#     """
+#     # 获取当前登录用户
+#     user = request.user
 
-    # 查询用户的所有条目和分类
-    total_items = Item.objects.filter(user=user).count()  # 总条目数
-    categories = Category.objects.filter(user=user)  # 当前用户的所有分类
-    category_counts = {
-        category.name: Item.objects.filter(user=user, category=category).count()
-        for category in categories
-    }
+#     # 查询用户的所有条目和分类
+#     total_items = Item.objects.filter(user=user).count()  # 总条目数
+#     categories = Category.objects.filter(user=user)  # 当前用户的所有分类
+#     category_counts = {
+#         category.name: Item.objects.filter(user=user, category=category).count()
+#         for category in categories
+#     }
 
-    # 渲染上下文
-    context = {
-        'total_items': total_items,
-        'category_counts': category_counts,
-    }
+#     # 渲染上下文
+#     context = {
+#         'total_items': total_items,
+#         'category_counts': category_counts,
+#     }
 
-    return render(request, 'index.html', context)
+#     return render(request, 'index.html', context)
 
 @login_required
 def item_list(request):

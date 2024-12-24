@@ -2,82 +2,124 @@
 {% load static %}
 {% block content %}
 <!-- Header with Background Image -->
-<div class="bg-container" style="background-image: url('{% static 'img/bg-masthead.jpg' %}'); background-size: cover; background-position: center; width: 100%; height: 80px;">
-  <div class="container text-center">
-      <h1 class="mx-auto mb-0" style="font-size: 3.5vw; line-height: 1.2; color: white;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);">
-          Item List
-      </h1>
-  </div>
+<div class="bg-container">
+    <div class="container text-center text-white">
+        <h1 class="display-4 fw-bold bg-title">Item List</h1>
+    </div>
 </div>
 
-<!-- Category Statistics Section with Consistent Style -->
-<section id="category-stats" class="content-section bg-primary text-white py-5">
-  <div class="container">
-      <!-- <h2 class="text-center mb-4" style="font-size: 2.5rem;">Category Statistics</h2> -->
-      <div class="row justify-content-center">
-          <div class="col-12 col-md-8">
-              <ul class="list-group">
-                  {% for category in category_stats %}
-                      <li class="list-group-item bg-primary text-white border-light">
-                          <strong>{{ category.category__name }}:</strong> {{ category.count }} Items
-                      </li>
-                  {% endfor %}
-              </ul>
-          </div>
-      </div>
-  </div>
+<style>
+/* 背景容器样式 */
+.bg-container {
+    background-image: url('{% static "img/banner-callout.jpg" %}');
+    background-size: cover; /* 保持背景图片填充整个区域 */
+    background-position: center;
+    height: auto; /* 自动高度 */
+    aspect-ratio: 2560 / 80; /* 保持宽高比 */
+    width: 100%; /* 背景容器宽度 */
+    position: relative; /* 为了确保文字在背景上正确定位 */
+}
+
+/* 标题样式 */
+.bg-title {
+    margin-top: 0;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    font-size: clamp(1.5rem, 5vw, 3rem); /* 根据屏幕宽度动态调整字体大小 */
+    line-height: 1.2;
+}
+
+/* 针对小屏幕优化背景高度 */
+@media (max-width: 768px) {
+    .bg-container {
+        height: auto; /* 自动高度 */
+        aspect-ratio: 1887 / 120; /* 确保背景比例 */
+    }
+}
+</style>
+
+<!-- Category Statistics Section -->
+<section id="category-stats" class="py-4" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            {% for category in category_stats %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>{{ category.category__name }}</strong>
+                                    <span class="badge bg-primary">{{ category.count }} Items</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
-<!-- Blue Section for Item List with Table -->
-<section id="item-list" class="content-section bg-primary text-white py-5">
-  <div class="container">
-      <!-- <h2 class="text-center mb-4" style="font-size: 2.5rem;">Item List</h2> -->
-      <div class="row justify-content-center">
-          <div class="col-12 col-md-8">
-              {% if page_obj %}
-              <!-- Item Table with Blue Background, Light Font and Rounded Borders -->
-              <table class="table table-sm table-transparent" >
-                  <thead>
-                      <tr>
-                          <th scope="col">Item</th>
-                          <th scope="col">Category</th>
-                          <th scope="col">Input Date</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      {% for item in page_obj %}
-                      <tr>
-                          <td><a href="{% url 'item-detail' item.id %}" >{{ item.item }}</a></td>
-                          <td>{{ item.category.name }}</td>
-                          <td>{{ item.inputDate }}</td>
-                      </tr>
-                      {% endfor %}
-                  </tbody>
-              </table>
+<!-- Item List Section -->
+<section id="item-list" class="py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                {% if page_obj %}
+                <!-- Responsive Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Item</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Input Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in page_obj %}
+                            <tr>
+                                <td><a href="{% url 'item-detail' item.id %}" class="text-primary">{{ item.item }}</a></td>
+                                <td>{{ item.category.name }}</td>
+                                <td>{{ item.inputDate }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-              <!-- Pagination -->
-              <div class="pagination mt-4">
-                  <span class="step-links">
-                      {% if page_obj.has_previous %}
-                      <a href="?page=1" class="text-light">first</a>
-                      <a href="?page={{ page_obj.previous_page_number }}" class="text-light">previous</a>
-                      {% endif %}
-                      <span class="current text-light">
-                          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                      </span>
-                      {% if page_obj.has_next %}
-                      <a href="?page={{ page_obj.next_page_number }}" class="text-light">next</a>
-                      <a href="?page={{ page_obj.paginator.num_pages }}" class="text-light">last</a>
-                      {% endif %}
-                  </span>
-              </div>
-              {% else %}
-              <div class="alert alert-info mt-4">
-                  No items found.
-              </div>
-              {% endif %}
-          </div>
-      </div>
-  </div>
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">Previous</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">Last</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% else %}
+                <div class="alert alert-info text-center">
+                    No items found.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </section>
 {% endblock %}

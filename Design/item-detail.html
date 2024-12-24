@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en" data-bss-forced-theme="light">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Ebbinghaus Anywhere</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/Source%20Sans%20Pro.css">
+    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
+    <link rel="stylesheet" href="assets/css/untitled.css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/Source%20Sans%20Pro.css">
+    <link rel="stylesheet" href="/static/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/fonts/simple-line-icons.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body id="page-top" class="m-0 p-0"><a class="menu-toggle rounded" href="#"><i class="fa fa-bars"></i></a>
+    <nav class="navbar navbar-expand navbar-light" id="sidebar-wrapper">
+        <div class="container"><button data-bs-toggle="collapse" data-bs-target="#sidebar-nav" class="navbar-toggler d-none"></button>
+            <div class="collapse navbar-collapse"><ul class="navbar-nav sidebar-nav" id="sidebar-nav">
+                    <li class="nav-item sidebar-brand">
+                        <a class="nav-link active js-scroll-trigger" href="/">Ebbinghaus Anywhere</a>
+                    </li>
+                    
+                    
+                    
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="/list/">All Items</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="/review/">Review</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="/input/">Input</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="/profile/">Profile</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a href="#" class="nav-link js-scroll-trigger" id="logout-link">Logout</a>
+                    </li>
+                    <script>
+                        document.getElementById('logout-link').addEventListener('click', function(e) {
+                            e.preventDefault();  // 防止页面跳转
+                    
+                            // 创建一个隐藏的表单，用于发起 POST 请求
+                            var form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = '/accounts/logout/';  // 填写登出URL
+                    
+                            // 创建一个隐藏的 csrf_token 输入框
+                            var csrfToken = document.createElement('input');
+                            csrfToken.type = 'hidden';
+                            csrfToken.name = 'csrfmiddlewaretoken';
+                            csrfToken.value = 'm8uib6BNxoeIq849mYRWAkS9SdMNGQnRS02Gxx0o1zcQj85OM5rcvGqGceCNLgkU';
+                            form.appendChild(csrfToken);
+                    
+                            // 将表单添加到页面中并提交
+                            document.body.appendChild(form);
+                            form.submit();
+                        });
+                    </script>
+                    
+    
+                    
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="/about/">About</a>
+                    </li>
+                    <li class="nav-item sidebar-nav-item">
+                        <a class="nav-link js-scroll-trigger" href="mailto:lubaixun@gmail.com">Contact</a>
+                    </li>
+                </ul></div>
+        </div>
+    </nav>
+    <div class="bg-container" style="background-image:url('/static/img/bg-callout.jpg');background-size:cover;background-position:center;height:100vh;display:flex;justify-content:center;align-items:center;">
+        <div class="card text-center shadow-lg" style="width:80%;max-width:600px;background-color:rgba(255, 255, 255, 0.9);padding:20px;border-radius:10px;">
+            <h2 class="fw-bold card-title">test</h2>
+            <div class="mt-3">
+                <p class="text-muted mb-1"><strong>英式音标:</strong> /test/ </p>
+                <p class="text-muted mb-1"><strong>美式音标:</strong> /test/ </p>
+            </div>
+            <div class="mt-3"><audio controls="">
+                <source src="https://fanyi-api.baidu.com/api/trans/api/tts?query=test&amp;appid=20210101000000001&amp;lang=en&amp;sign=aacae98f248042e16cc3435a9626c9b7" type="audio/mpeg">
+                您的浏览器不支持音频播放。
+            </audio></div>
+            <hr>
+            <div class="text-start">
+                <p><strong>Content:</strong></p>
+                <p style="white-space:pre-line;">词性: n.释义: 测试; 试验; 检验; (医疗上的)检查，化验，检验; 测验; 考查词性: v.释义: 测试; 试验; 检验; 检查; 考验; 测验; 化验; 考查</p>
+                <p><strong>Input Date:</strong> Dec. 9, 2024</p>
+                <p><strong>Initial Date:</strong> Dec. 9, 2024</p>
+                <p><strong>Proficiency:</strong> Unfamiliar</p>
+                <p><strong>Category:</strong> 单词</p>
+            </div>
+            <hr>
+            <div class="container">
+                <ul class="list-inline mb-2" style="margin:0;padding:0;">
+                    <li class="list-inline-item list-inline-item"><a class="link-light social-link rounded-circle" href="#" style="background: #39738d;"><i class="icon-action-undo"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <footer class="text-center footer" style="padding:10px 0;background-color:#f8f9fa;">
+        <div class="container">
+            <ul class="list-inline mb-2" style="margin:0;padding:0;">
+                <li class="list-inline-item list-inline-item"><a class="link-light social-link rounded-circle" href="#"><i class="icon-logout"></i></a></li>
+                <li class="list-inline-item list-inline-item"><a class="link-light social-link rounded-circle" href="#"><i class="icon-present"></i></a></li>
+                <li class="list-inline-item list-inline-item"><a class="link-light social-link rounded-circle" href="#"><i class="icon-envelope-open"></i></a></li>
+            </ul>
+            <p class="text-muted mb-0 small" style="font-size:14px;margin-top:5px;">Copyright &nbsp;© Brandon Lu 2024</p>
+        </div><a class="js-scroll-trigger scroll-to-top rounded" href="#page-top" style="bottom:10px;"><i class="fa fa-angle-up"></i></a>
+    </footer><script>
+    // 等待页面加载完成后渲染 MathJax
+    document.addEventListener("DOMContentLoaded", function () {
+        MathJax.typeset();
+    });
+</script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/stylish-portfolio.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/stylish-portfolio.js"></script>
+</body>
+
+</html>

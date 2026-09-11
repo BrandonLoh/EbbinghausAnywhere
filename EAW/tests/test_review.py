@@ -59,6 +59,27 @@ class ReviewViewTests(TestCase):
         self.assertContains(response, 'markdown_render.js')
 
 
+class ReviewHomeViewTests(TestCase):
+    """复习主页的默认日期必须来自服务端(Asia/Shanghai), 与后端查询语义一致。"""
+
+    def setUp(self):
+        self.user = create_user_with_defaults('alice')
+        self.client.login(username='alice', password='pass-12345678')
+
+    def test_default_date_is_server_localdate(self):
+        """回归测试: 曾经用浏览器 toISOString() 取默认日期, 在 UTC+8 的凌晨会差一天。"""
+        response = self.client.get(reverse('review-home'))
+        self.assertEqual(response.status_code, 200)
+        local_today = timezone.localdate().isoformat()
+        # 页面 JS 直接使用服务端渲染的日期字符串
+        self.assertContains(response, f'const today = "{local_today}";')
+
+    def test_page_does_not_use_browser_utc(self):
+        """页面上不应再出现基于 UTC 的浏览器端日期计算(注释中提及不算)。"""
+        response = self.client.get(reverse('review-home'))
+        self.assertNotContains(response, 'new Date().toISOString')
+
+
 class ReviewFeedbackTests(TestCase):
     def setUp(self):
         self.user = create_user_with_defaults('alice')

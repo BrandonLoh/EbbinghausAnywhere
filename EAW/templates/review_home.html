@@ -41,8 +41,8 @@
 <script>
     // 使用 window.onload 确保页面完全加载后再执行代码
     window.onload = function() {
-        // 获取当天日期并格式化为 YYYY-MM-DD
-        const today = new Date().toISOString().split('T')[0];
+        // 使用服务端计算的日期(按 Asia/Shanghai),避免浏览器 toISOString() 的 UTC 偏移
+        const today = "{{ today|date:'Y-m-d' }}";
 
         // 确保在页面加载后输出当前日期
         console.log("当前日期为：", today); // 控制台日志确认

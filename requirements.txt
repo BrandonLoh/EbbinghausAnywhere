@@ -4,7 +4,9 @@
 Django==4.2.30
 django-environ==0.14.0
 django-dirtyfields==1.9.9
-djangorestframework==3.18.1
+# 注意:DRF 3.18+ 要求 Django>=5.2,与本项目的 Django 4.2 LTS 冲突;
+# 3.17.2 是支持 Django 4.2 的最新版本。升级 Django 前请勿单独升 DRF。
+djangorestframework==3.17.2
 openpyxl==3.1.5
 requests==2.34.2
 Markdown==3.10.3

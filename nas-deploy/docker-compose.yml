@@ -13,6 +13,9 @@ services:
     build:
       context: ..
       dockerfile: nas-deploy/Dockerfile
+      # 国内网络构建依赖很慢时,取消下面两行注释使用镜像源(详见 docs/DEPLOY_NAS.md)
+      # args:
+      #   PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
     image: ebbinghaus-nas:latest
     container_name: ebbinghaus-nas
     restart: unless-stopped
@@ -26,5 +29,5 @@ services:
     volumes:
       - ./data:/data
     ports:
-      # 左边是 NAS 上的端口, 如与现有服务冲突可改为 8081 等
-      - "8080:8000"
+      # 左边是 NAS 上的端口(被占用时可改为其它空闲端口, 先用 docker ps 查看)
+      - "8086:8000"

@@ -127,6 +127,12 @@ def validate_snapshot(data):
 
     在任何写操作之前调用, 保证非法快照不会触碰数据库。
     返回各段行数统计。
+
+    设计原则:**只拦结构性损坏, 不拦数据内容**。
+    副本的职责是忠实镜像主库 —— 主库允许存在的数据(如条目名为空字符串、
+    用户名为空等边缘数据)必须能原样恢复, 否则同步会因主库的历史数据
+    永久失败。因此这里检查的是"字段是否缺失/为 None、外键能否解析、
+    日期是否合法", 而不是"字段是否非空"。
     """
     if not isinstance(data, dict):
         raise SnapshotError('快照根节点必须是 JSON 对象')
@@ -146,7 +152,7 @@ def validate_snapshot(data):
     user_ids = set()
     for row in data['users']:
         uid = row.get('id')
-        if uid is None or not row.get('username') or 'password' not in row:
+        if uid is None or row.get('username') is None or row.get('password') is None:
             raise SnapshotError(f'用户记录缺少 id/username/password: {row!r}')
         if uid in user_ids:
             raise SnapshotError(f'用户 id 重复: {uid}')
@@ -156,7 +162,7 @@ def validate_snapshot(data):
     category_ids = set()
     for row in data['categories']:
         cid = row.get('id')
-        if cid is None or not row.get('name'):
+        if cid is None or row.get('name') is None:
             raise SnapshotError(f'类别记录缺少 id/name: {row!r}')
         if cid in category_ids:
             raise SnapshotError(f'类别 id 重复: {cid}')
@@ -180,7 +186,7 @@ def validate_snapshot(data):
     item_ids = set()
     for row in data['items']:
         iid = row.get('id')
-        if iid is None or not row.get('item'):
+        if iid is None or row.get('item') is None:
             raise SnapshotError(f'条目记录缺少 id/item: {row!r}')
         if iid in item_ids:
             raise SnapshotError(f'条目 id 重复: {iid}')
@@ -198,7 +204,7 @@ def validate_snapshot(data):
     if not isinstance(wechat_profiles, list):
         raise SnapshotError('wechat_profiles 段必须是列表')
     for row in wechat_profiles:
-        if row.get('id') is None or not row.get('openid'):
+        if row.get('id') is None or row.get('openid') is None:
             raise SnapshotError(f'微信绑定记录缺少 id/openid: {row!r}')
         if row.get('user_id') not in user_ids:
             raise SnapshotError(f"微信绑定 id={row.get('id')} 引用了不存在的用户 {row.get('user_id')!r}")

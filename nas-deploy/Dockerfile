@@ -13,12 +13,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+# PyPI 源(默认官方源;国内网络构建很慢时可改用镜像加速):
+#   docker compose build --build-arg PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+ARG PIP_INDEX_URL=https://pypi.org/simple
+
 # 主依赖(与 PA 完全一致的版本, 见 requirements.txt)
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -i ${PIP_INDEX_URL} -r requirements.txt
 
 # NAS 专属依赖(仅副本容器需要; PA 上不安装这两个)
-RUN pip install --no-cache-dir gunicorn==23.0.0 whitenoise==6.12.0
+RUN pip install --no-cache-dir -i ${PIP_INDEX_URL} gunicorn==23.0.0 whitenoise==6.12.0
 
 # 应用代码(不需要的文件已由 .dockerignore 排除)
 COPY . .

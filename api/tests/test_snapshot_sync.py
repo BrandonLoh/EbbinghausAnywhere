@@ -145,6 +145,31 @@ class ValidateSnapshotTests(TestCase):
         counts = validate_snapshot(data)
         self.assertEqual(counts['items'], 2)
 
+    def test_empty_string_fields_allowed(self):
+        """回归测试: 主库存在条目名为空字符串的历史数据(真实案例 id=5466),
+        校验只拦结构性损坏, 必须放行空字符串, 否则同步永久失败。"""
+        data = _make_snapshot()
+        data['items'][0]['item'] = ''
+        data['items'][0]['content'] = ''
+        data['categories'][0]['name'] = ''
+        counts = validate_snapshot(data)
+        self.assertEqual(counts['items'], 2)
+        self.assertEqual(counts['categories'], 2)
+
+    def test_missing_key_still_rejected(self):
+        """字段整个缺失(不是空字符串)仍必须拦下。"""
+        data = _make_snapshot()
+        del data['items'][0]['item']
+        with self.assertRaises(SnapshotError):
+            validate_snapshot(data)
+
+    def test_none_value_still_rejected(self):
+        """显式 null 仍必须拦下。"""
+        data = _make_snapshot()
+        data['items'][0]['item'] = None
+        with self.assertRaises(SnapshotError):
+            validate_snapshot(data)
+
 
 # ---------------------------------------------------------------- 恢复语义
 
@@ -248,6 +273,20 @@ class RestoreSnapshotTests(TestCase):
         self.assertTrue(Item.objects.filter(item='旧数据').exists())
         self.assertTrue(Category.objects.filter(name='旧类别').exists())
         self.assertTrue(User.objects.filter(username='old').exists())
+
+    def test_restores_empty_string_item_name(self):
+        """端到端回归: 主库存在空名称条目(真实案例 id=5466)时, 恢复必须成功。"""
+        data = _make_snapshot()
+        data['items'][0]['item'] = ''
+        data['items'][0]['content'] = ''
+
+        restore_snapshot(data)
+
+        restored = Item.objects.get(pk=30)
+        self.assertEqual(restored.item, '')
+        self.assertEqual(restored.content, '')
+        # 其余字段不受影响
+        self.assertEqual(restored.us_phonetic, 'ˈæpəl')
 
 
 # ---------------------------------------------------------------- 角色守卫

@@ -15,7 +15,7 @@ import environ
 
 
 env = environ.Env(
-    DEBUG=(bool, True)
+    DEBUG=(bool, False)
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework.authtoken",
     "EAW.apps.EawConfig",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
@@ -131,6 +134,24 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # 默认认证后端
 )
+
+# REST API (供微信小程序与 NAS 同步使用)
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'UNAUTHENTICATED_USER': None,
+}
+
+# 微信小程序(可选,不配置时仅微信登录端点不可用,其余功能不受影响)
+WECHAT_APPID = env('WECHAT_APPID', default='')
+WECHAT_SECRET = env('WECHAT_SECRET', default='')
 
 # 登录和退出后的跳转路径
 LOGIN_URL = '/accounts/login/'  # 用户未登录时，跳转的登录页面

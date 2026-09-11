@@ -4,6 +4,7 @@
 Django==4.2.30
 django-environ==0.14.0
 django-dirtyfields==1.9.9
+djangorestframework==3.18.1
 openpyxl==3.1.5
 requests==2.34.2
 Markdown==3.10.3

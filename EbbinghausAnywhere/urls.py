@@ -23,6 +23,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('api/v1/', include('api.urls')),  # REST API(小程序 / NAS 同步)
     path('', include('EAW.urls')),  # 直接挂载 EAW.urls，不再加 accounts/ 前缀
 ]
 

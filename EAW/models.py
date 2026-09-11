@@ -5,8 +5,20 @@ from dirtyfields import DirtyFieldsMixin
 from django.core.exceptions import ValidationError
 
 # Create your models here.
+class CategoryQuerySet(models.QuerySet):
+    def annotate_item_count(self):
+        """附加每个类别下的条目计数(API 列表用)。
+
+        反向 FK 的查询名默认是模型名小写(item),
+        不是反向管理器名(item_set)——两者在 Django 里不同。
+        """
+        return self.annotate(item_count=models.Count('item'))
+
+
 # Word Category defined by user
 class Category(DirtyFieldsMixin, models.Model):
+    objects = CategoryQuerySet.as_manager()
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, editable=False)  # 关联用户
     name = models.CharField(max_length=200, help_text="Enter a category (e.g., word, phrase, etc.)")
     sort_order = models.PositiveIntegerField(

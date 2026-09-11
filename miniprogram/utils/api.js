@@ -56,7 +56,14 @@ function request(path, { method = 'GET', data = null, auth = true } = {}) {
         const detail = (res.data && (res.data.detail || res.data.message)) || `请求失败(${res.statusCode})`;
         reject(new Error(detail));
       },
-      fail() {
+      fail(err) {
+        // 真机上未开启"调试"模式时,微信会拦截未加入白名单的域名,
+        // errMsg 含 "url not in domain list" —— 直接给出可操作的提示
+        const errMsg = (err && err.errMsg) || '';
+        if (errMsg.indexOf('not in domain list') !== -1) {
+          reject(new Error('域名未加入白名单：请在手机右上角「…」→ 开发调试 → 打开调试后重试'));
+          return;
+        }
         reject(new Error('网络异常，请检查网络连接'));
       },
     });

@@ -5,6 +5,7 @@ from datetime import date, timedelta
 
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from EAW.models import Item, Proficiency
 
@@ -94,7 +95,7 @@ class ReviewFeedbackTests(TestCase):
         response = self._post('review-feedback-reset')
         self.assertTrue(response.json()['success'])
         self.item.refresh_from_db()
-        self.assertEqual(self.item.initDate, date.today())
+        self.assertEqual(self.item.initDate, timezone.localdate())
         self.assertEqual(self.item.proficiency, Proficiency.UNFAMILIAR)
         self.assertEqual(self.item.inputDate, old_init)  # inputDate 不应被重置
 

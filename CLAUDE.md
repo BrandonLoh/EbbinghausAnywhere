@@ -108,6 +108,8 @@ Access the site at http://localhost:8000.
 - Baidu translation API is optional; if not configured, translation features will be disabled.
 - MathJax/mhchem and Markdown rendering (marked + DOMPurify) are client-side; item content is rendered by `static/js/markdown_render.js` on elements with `data-markdown`.
 - REST API (`/api/v1/`) uses DRF Token auth: `POST /api/v1/auth/login/` for a token, then `Authorization: Token <key>`. All registered users have `is_staff=True` — never use DRF's `IsAdminUser` for privileged endpoints; use `api.permissions.IsSuperUser` (the snapshot endpoint already does).
+- WeChat binding is **N:1** (`WeChatProfile.user` is a FK): multiple WeChat accounts may bind one main account (family sharing); `openid` is unique so one WeChat belongs to exactly one account (rebinding migrates it).
+- Always use `timezone.localdate()` (not `date.today()` / `now().date()`) for "today" — the project runs `USE_TZ=True` with `TIME_ZONE="Asia/Shanghai"`, and UTC dates are one day behind Beijing time after 00:00.
 - NAS replica sync: `EAW_ROLE` (`master` default / `replica`) guards `sync_snapshot` and `restore_snapshot` management commands — they refuse to run unless `EAW_ROLE=replica`, so a stale snapshot can never overwrite the master. The replica container also enables WhiteNoise for static files and reads `DATABASE_URL` (e.g. `sqlite:////data/db.sqlite3`); the master (PA) is unaffected by all of these.
 - The `EAW` app contains the core flashcard logic, models, and views.
 - Refer to the `README.md` for detailed user instructions and deployment guidelines.

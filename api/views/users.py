@@ -1,8 +1,8 @@
 """用户概览与类别端点。"""
 
-from datetime import date, timedelta
+from datetime import timedelta
 
-from django.utils.timezone import now
+from django.utils import timezone
 from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -23,11 +23,11 @@ def me(request):
     total_items = items.count()
     if total_items > 0:
         first_item_date = items.order_by('inputDate').first().inputDate
-        days_since_first_item = (now().date() - first_item_date).days
+        days_since_first_item = (timezone.localdate() - first_item_date).days
     else:
         days_since_first_item = 0
 
-    today = date.today()
+    today = timezone.localdate()
     intervals = ReviewDay.objects.filter(user=user).values_list('day', flat=True)
     due_dates = [today - timedelta(days=d) for d in intervals]
     today_due = items.filter(initDate__in=due_dates).count()

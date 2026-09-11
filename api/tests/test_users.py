@@ -3,6 +3,7 @@
 from datetime import date, timedelta
 
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from EAW.models import Category, Item, ReviewDay
@@ -17,8 +18,8 @@ class MeTests(TestCase):
 
     def test_me_returns_user_and_stats(self):
         create_item(self.user, item='apple',
-                    input_date=date.today() - timedelta(days=9),
-                    init_date=date.today() - timedelta(days=1))
+                    input_date=timezone.localdate() - timedelta(days=9),
+                    init_date=timezone.localdate() - timedelta(days=1))
         response = self.client.get('/api/v1/me/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['user']['username'], 'alice')

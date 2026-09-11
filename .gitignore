@@ -177,3 +177,6 @@ cython_debug/
 # NAS 部署运行时数据(数据库、快照、本地 .env)
 nas-deploy/data/
 snapshots/
+
+# 微信开发者工具的本机私有配置(个人设置,不入库)
+miniprogram/project.private.config.json

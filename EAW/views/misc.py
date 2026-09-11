@@ -7,7 +7,7 @@ import markdown
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.utils.timezone import now
+from django.utils import timezone
 
 from ..models import Item
 
@@ -23,7 +23,7 @@ def home(request):
         total_items = items.count()
         if total_items > 0:
             first_item_date = items.order_by('inputDate').first().inputDate
-            days_since_first_item = (now().date() - first_item_date).days
+            days_since_first_item = (timezone.localdate() - first_item_date).days
         else:
             days_since_first_item = 0
 

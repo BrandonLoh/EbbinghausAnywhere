@@ -2,13 +2,14 @@
 
 import json
 import logging
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 
 from ..models import Category, Item, Proficiency, ReviewDay
 
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def ReviewHomeView(request):
-    today = datetime.today().date()
+    today = timezone.localdate()
     return render(
         request,
         'review_home.html',
@@ -153,7 +154,7 @@ def ReviewFeedbackReset(request):
         curword = Item.objects.get(user=request.user, id=item_id)
 
         # 更新 initDate 为当前日期
-        curword.initDate = date.today()
+        curword.initDate = timezone.localdate()
 
         # 更新 proficiency 为 UNFAMILIAR
         curword.proficiency = Proficiency.UNFAMILIAR

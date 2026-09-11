@@ -4,8 +4,9 @@
 按 initDate = 目标日期 - 间隔天数 匹配,组内按间隔天数升序。
 """
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -20,7 +21,7 @@ def _parse_review_date(request):
     """从 ?date= 参数取目标日期,缺省为今天;非法格式返回 None。"""
     raw = request.query_params.get('date')
     if not raw:
-        return date.today(), None
+        return timezone.localdate(), None
     try:
         return datetime.strptime(raw, '%Y-%m-%d').date(), None
     except ValueError:
@@ -127,7 +128,7 @@ def review_feedback(request):
         cur_item.proficiency = Proficiency.UNFAMILIAR
         message = 'Proficiency updated to UNFAMILIAR.'
     else:  # reset: 复习周期重置为今天,熟练度归零
-        cur_item.initDate = date.today()
+        cur_item.initDate = timezone.localdate()
         cur_item.proficiency = Proficiency.UNFAMILIAR
         message = 'initDate reset to today and proficiency set to UNFAMILIAR.'
 

@@ -60,7 +60,7 @@
 ```
 api/                        # 新 Django app,与 EAW 平级
 ├── apps.py
-├── models.py               # WeChatProfile(user 1:1, openid unique)
+├── models.py               # WeChatProfile(N:1 绑定; openid unique)
 ├── serializers.py
 ├── urls.py                 # /api/v1/...
 ├── views/
@@ -240,7 +240,8 @@ token 存本地 storage,后续请求带 Authorization: Token xxx
 ```
 
 - `code2session` 在服务端调用(appsecret 不出后端),走 `requests`(已是现有依赖);
-- 新增表 `api_wechatprofile`(1:1 User + unique openid)——**又一个纯增量迁移**。
+- 新增表 `api_wechatprofile`(**N:1** —— 多个微信可绑定同一个主站账号,适合家庭共用;
+  openid 唯一,一个微信同时只属于一个账号,换绑即迁移)——**纯增量迁移**。
 
 ### 4.3 内容渲染分级(务实策略)
 

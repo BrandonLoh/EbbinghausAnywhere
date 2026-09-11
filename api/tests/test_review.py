@@ -3,6 +3,7 @@
 from datetime import date, timedelta
 
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from EAW.models import Category, Proficiency
@@ -23,7 +24,7 @@ class ReviewListTests(TestCase):
         """initDate = 今天 - days_ago,命中 ReviewDay 中 day=days_ago 的间隔。"""
         return create_item(
             self.user, item=name,
-            init_date=date.today() - timedelta(days=days_ago),
+            init_date=timezone.localdate() - timedelta(days=days_ago),
             **kwargs,
         )
 
@@ -31,7 +32,7 @@ class ReviewListTests(TestCase):
         self._due_item('apple', days_ago=1)
         response = self.client.get(REVIEW_URL)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['review_date'], date.today().isoformat())
+        self.assertEqual(response.data['review_date'], timezone.localdate().isoformat())
 
         category = response.data['categories'][0]
         self.assertEqual(category['name'], '单词')
@@ -48,7 +49,7 @@ class ReviewListTests(TestCase):
 
     def test_other_users_items_absent(self):
         create_item(self.other, item='bobs-word',
-                    init_date=date.today() - timedelta(days=1))
+                    init_date=timezone.localdate() - timedelta(days=1))
         response = self.client.get(REVIEW_URL)
         self.assertEqual(response.data['categories'], [])
 
@@ -68,7 +69,7 @@ class ReviewListTests(TestCase):
         grammar = Category.objects.get(user=self.user, name='语法')
         self._due_item('word', days_ago=1)
         create_item(self.user, item='过去时', category=grammar,
-                    init_date=date.today() - timedelta(days=1))
+                    init_date=timezone.localdate() - timedelta(days=1))
 
         response = self.client.get(REVIEW_URL)
         names = [c['name'] for c in response.data['categories']]
@@ -123,7 +124,7 @@ class ReviewFeedbackTests(TestCase):
         response = self._post(self.item.pk, 'reset')
         self.assertTrue(response.data['success'])
         self.item.refresh_from_db()
-        self.assertEqual(self.item.initDate, date.today())
+        self.assertEqual(self.item.initDate, timezone.localdate())
         self.assertEqual(self.item.proficiency, Proficiency.UNFAMILIAR)
 
     def test_other_users_item_not_found(self):

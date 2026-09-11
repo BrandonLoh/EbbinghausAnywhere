@@ -288,6 +288,27 @@ class RestoreSnapshotTests(TestCase):
         # 其余字段不受影响
         self.assertEqual(restored.us_phonetic, 'ˈæpəl')
 
+    def test_restores_multiple_wechats_for_same_user(self):
+        """N:1 绑定: 同一用户的多条微信绑定必须能完整恢复(主库↔副本一致)。"""
+        data = _make_snapshot()
+        data['wechat_profiles'] = [
+            {'id': 40, 'user_id': 1, 'openid': 'openid-dad',
+             'created_at': '2026-03-01T10:00:00+08:00'},
+            {'id': 41, 'user_id': 1, 'openid': 'openid-mom',
+             'created_at': '2026-03-02T11:00:00+08:00'},
+        ]
+
+        counts = restore_snapshot(data)
+
+        self.assertEqual(counts['wechat_profiles'], 2)
+        bindings = WeChatProfile.objects.filter(user__username='ellie')
+        self.assertEqual(
+            set(bindings.values_list('openid', flat=True)),
+            {'openid-dad', 'openid-mom'},
+        )
+        # created_at 均按快照值还原
+        self.assertEqual(bindings.get(openid='openid-mom').created_at.month, 3)
+
 
 # ---------------------------------------------------------------- 角色守卫
 

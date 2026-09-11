@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.timezone import now
+from django.utils import timezone
 
 from ..models import Category, Item, Proficiency
 from ..utils import fetch_and_merge_translation
@@ -99,10 +99,10 @@ def import_items_from_excel(request):
                     content = ""  # 如果 content 为 None，赋空字符串
 
                 input_date_index = column_index.get("Input Date")
-                input_date = row[input_date_index] if input_date_index is not None else now().date()
+                input_date = row[input_date_index] if input_date_index is not None else timezone.localdate()
 
                 init_date_index = column_index.get("Init Date")
-                init_date = row[init_date_index] if init_date_index is not None else now().date()
+                init_date = row[init_date_index] if init_date_index is not None else timezone.localdate()
 
                 # 处理 Proficiency 字段
                 proficiency_index = column_index.get("Proficiency")

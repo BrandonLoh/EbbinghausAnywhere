@@ -1,7 +1,7 @@
 {
   "description": "万物皆可艾宾浩斯 小程序端",
   "compileType": "miniprogram",
-  "appid": "touristappid",
+  "appid": "wx62ea2668c59bfb6d",
   "projectname": "ebbinghaus-anywhere",
   "setting": {
     "urlCheck": false,
@@ -10,10 +10,29 @@
     "postcss": true,
     "minified": true,
     "minifyWXSS": true,
-    "minifyWXML": true
+    "minifyWXML": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
   },
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
+  },
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
   }
 }

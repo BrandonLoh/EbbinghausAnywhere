@@ -14,6 +14,7 @@
 ### 2.2 录入新条目
 - 在Input页面可以录入新条目，选择日期和类别进行保存
 - 输入时可以通过冒号":"区分条目名称和内容
+- 条目内容支持Markdown语法（标题、列表、粗体斜体、代码块、表格等），在复习页面和条目详情页面自动渲染
 - 通过mathjax支持使用LaTeX语法输入数学公式和符号并支持mhchem输入化学方程式，冒号后输入“\$\$公式内容$$”或“\$公式内容\$”即可调用mathjax渲染公式。详细用法参见[mathjax文档](https://www.osgeo.cn/mathjax/index.html)和[mhchem for MathJax](https://mhchem.github.io/MathJax-mhchem/)
 - 勾选“Fetch Translations”选项可对单词类别的内容查询音标、发音和中文释义。
 ### 2.3 进行复习

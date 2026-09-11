@@ -43,7 +43,7 @@
     <!-- 详细信息 -->
     <div class="text-start">
         <p><strong>Content:</strong></p>
-        <p style="white-space: pre-line">{{ object.content |safe}}</p>
+        <div class="md-content" data-markdown>{{ object.content }}</div>
         <p><strong>Input Date:</strong> {{ object.inputDate }}</p>
         <p><strong>Initial Date:</strong> {{ object.initDate }}</p>
         <p><strong>Proficiency:</strong> {{ object.get_proficiency_display }}</p>

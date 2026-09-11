@@ -50,9 +50,8 @@
                                             </audio>
                                         {% endif %}
                                     {% endif %}
-                                    {% autoescape off %}
-                                    <p style="white-space: pre-line"><strong>Content:</strong><br>{{ word.1.content|safe }}</p>
-                                    {% endautoescape %}
+                                    <p><strong>Content:</strong></p>
+                                    <div class="md-content" data-markdown>{{ word.1.content }}</div>
                                 </div>
                                 <div class="modal-footer">
                                     <button class="btn btn-success feedback-btn" data-id="{{ word.1.id }}" data-action="yes">YES</button>

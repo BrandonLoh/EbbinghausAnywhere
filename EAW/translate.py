@@ -17,7 +17,7 @@ def baidu_translate(query):
     # 检查 API 密钥是否配置
     if not BAIDU_API_KEY or not BAIDU_SECRET_KEY:
         print("API 密钥未配置")
-        return JsonResponse({"success": False, "message": "未配置百度 API 密钥"}, status=400)
+        return {}  # 统一返回空字典,调用方(视图/工具函数)按"翻译失败"处理
     
     query = standardize_input(query)
     

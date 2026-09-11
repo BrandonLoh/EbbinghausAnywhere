@@ -13,16 +13,15 @@
 </script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> 
 
+<!-- Markdown 渲染(marked 解析 + DOMPurify 消毒) -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="{% static 'js/markdown_render.js' %}"></script>
+
 <!-- 引入 Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- 引入 Bootstrap 和自定义 JavaScript -->
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
-    <script>
-    // 等待页面加载完成后渲染 MathJax
-    document.addEventListener("DOMContentLoaded", function () {
-        MathJax.typeset();
-    });
-</script>
 <script src="{% static 'js/stylish-portfolio.js' %}"></script>

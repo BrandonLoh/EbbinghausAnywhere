@@ -110,9 +110,9 @@
             // 重新绑定动态内容中的事件
             bindReviewDayEvents();  // 确保绑定按钮事件
 
-            // 手动触发 MathJax 渲染
-            if (window.MathJax) {
-                MathJax.typeset(); // 渲染数学公式
+            // 渲染动态内容中的 Markdown(公式由其内部触发 MathJax 排版)
+            if (window.renderMarkdown) {
+                window.renderMarkdown(reviewContentDiv);
             }
         })
         .catch(error => {

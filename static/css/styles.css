@@ -1,4 +1,3 @@
-<style>
 body {
     display: flex;
     flex-direction: column;
@@ -235,4 +234,101 @@ main {
 .card-header {
     padding: 1rem; /* 可调整 */
 }
-</style>
+
+/* ===== Markdown 渲染区(data-markdown)排版 ===== */
+.md-content {
+    /* 兼容未启用 JS 的环境:保留换行,内容仍按行可读 */
+    white-space: pre-line;
+    word-wrap: break-word;
+}
+
+/* JS 渲染后由脚本添加该类,Markdown 元素自带块级排版,关闭 pre-line */
+.md-content.md-rendered {
+    white-space: normal;
+}
+
+.md-content > *:first-child {
+    margin-top: 0;
+}
+.md-content > *:last-child {
+    margin-bottom: 0;
+}
+.md-content h1, .md-content h2, .md-content h3,
+.md-content h4, .md-content h5, .md-content h6 {
+    margin: 0.8em 0 0.4em;
+    font-weight: 600;
+    line-height: 1.3;
+}
+.md-content h1 { font-size: 1.5em; }
+.md-content h2 { font-size: 1.3em; }
+.md-content h3 { font-size: 1.15em; }
+.md-content p {
+    margin: 0.4em 0;
+}
+.md-content ul, .md-content ol {
+    margin: 0.4em 0;
+    padding-left: 1.5em;
+}
+.md-content li {
+    margin: 0.15em 0;
+}
+.md-content code {
+    padding: 0.15em 0.35em;
+    border-radius: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.06);
+    font-size: 0.9em;
+}
+.md-content pre {
+    margin: 0.5em 0;
+    padding: 0.75em;
+    border-radius: 0.4rem;
+    background-color: rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+    white-space: pre;
+}
+.md-content pre code {
+    padding: 0;
+    background-color: transparent;
+}
+.md-content blockquote {
+    margin: 0.5em 0;
+    padding: 0.25em 0.9em;
+    border-left: 0.3em solid rgba(0, 0, 0, 0.15);
+    color: rgba(0, 0, 0, 0.55);
+}
+.md-content table {
+    margin: 0.5em 0;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.95em;
+}
+.md-content th, .md-content td {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 0.3em 0.6em;
+}
+.md-content th {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+.md-content img {
+    max-width: 100%;
+    height: auto;
+}
+.md-content a {
+    word-break: break-all;
+}
+/* 深色模式下的适配(跟随 Bootstrap 5 data-bs-theme) */
+[data-bs-theme="dark"] .md-content code,
+[data-bs-theme="dark"] .md-content pre {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+[data-bs-theme="dark"] .md-content blockquote {
+    border-left-color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.6);
+}
+[data-bs-theme="dark"] .md-content th,
+[data-bs-theme="dark"] .md-content td {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+[data-bs-theme="dark"] .md-content th {
+    background-color: rgba(255, 255, 255, 0.08);
+}

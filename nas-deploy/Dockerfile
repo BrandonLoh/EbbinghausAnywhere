@@ -24,8 +24,9 @@ RUN pip install --no-cache-dir gunicorn==23.0.0 whitenoise==6.12.0
 COPY . .
 
 # 入口脚本负责: 迁移 → 收集静态文件 → 启动 gunicorn
+# sed 兜底: 若构建上下文中的脚本带有 Windows CRLF 换行, 去掉 \r 以免 shebang 失效
 COPY nas-deploy/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 EXPOSE 8000
 

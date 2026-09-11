@@ -1,0 +1,5 @@
+# 换行符策略: 仓库中的脚本文件在 Linux(NAS 容器)上执行,
+# 必须始终以 LF 换行, 否则会报 "$'\r': command not found" 或 "bad interpreter"。
+# 本文件强制这两类文件在任何平台检出时都使用 LF, 不受 core.autocrlf 影响。
+*.sh text eol=lf
+Dockerfile text eol=lf

@@ -44,13 +44,38 @@ python manage.py drf_create_token syncbot
 在 NAS 上(以群晖为例,`/volume1/docker/ebbinghaus/` 为部署目录):
 
 ```bash
-# 方式 A:git 克隆(推荐,便于日后更新)
+# 方式 A:git 克隆(推荐,便于日后 git pull 更新)
 cd /volume1/docker
 git clone <你的仓库地址> ebbinghaus
 cd ebbinghaus/nas-deploy
 
 # 方式 B:从本地电脑上传整个项目目录到 NAS
 ```
+
+> 方式 B 上传时建议**排除** `venv/`(数百 MB)、`debug.log`、`db.sqlite3`、
+> `staticfiles/`、`__pycache__/` 等本地运行产物;否则上传很慢且无意义。
+
+### 关于目录与权限(常见疑问)
+
+**代码目录本身不需要设置任何权限**:Docker 在群晖/QNAP 上以 root 运行,能直接读取
+你上传的代码;放在 `/volume1/docker/` 这类标准位置即可,无需 chmod/chown。
+需要留意的只有三处:
+
+1. **`.env` 建议限制为仅自己可读** —— 它是唯一含敏感信息的文件(SECRET_KEY 与主库
+   同步令牌)。有 SSH 时执行 `chmod 600 .env`;无 SSH 则在 File Station 中右键
+   `.env` → 属性 → 权限,去掉其他用户/群组的读取权限。
+2. **建议提前手动创建 `nas-deploy/data` 空目录**(File Station 新建文件夹即可)。
+   容器会以 root 身份在其中写入数据库与快照:若目录由 Docker 自动创建,其归属为
+   root,日后你在 File Station 中清理旧快照会提示权限不足;自己先建好则清理方便。
+   容器生成的文件(`data/db.sqlite3`、`data/snapshots/`)显示属主为 root 属**正常现象**,
+   不影响使用;需要整目录清空时用 SSH:`sudo rm -rf /volume1/docker/ebbinghaus/nas-deploy/data`。
+3. **从 Windows 直接上传时注意脚本换行符** —— 若 `sync.sh` 等脚本被保存为 CRLF 换行,
+   在 Linux 上执行会报 `$'\r': command not found`。上传后修正一次即可:
+   ```bash
+   sed -i 's/\r$//' nas-deploy/*.sh
+   ```
+   (用方式 A 的 git clone 不会有此问题——仓库已通过 `.gitattributes` 强制脚本使用 LF;
+   容器入口脚本另有 Dockerfile 内兜底处理。)
 
 ## Step 2. 配置 .env
 
@@ -180,7 +205,8 @@ docker compose exec -T web python manage.py restore_snapshot \
 | 同步报「快照校验失败」 | 快照内容异常,数据库未被改动;查看输出中的具体行号信息 |
 | 端口 8080 被占用 | 修改 `docker-compose.yml` 中的端口映射(如 `8081:8000`)后 `docker compose up -d` |
 | 忘了本地管理员密码 | `docker compose exec web python manage.py changepassword <用户名>` |
-| 想清空重来 | 停止容器 → 删除 `nas-deploy/data/` 目录 → 重新执行 Step 3-5 |
+| 想清空重来 | 停止容器 → 删除 `nas-deploy/data/` 目录 → 重新执行 Step 3-5。若 File Station 提示权限不足(目录归 root),用 SSH:`sudo rm -rf /volume1/docker/ebbinghaus/nas-deploy/data` |
+| `$'\r': command not found` | 脚本被 Windows 保存成了 CRLF 换行;执行 `sed -i 's/\r$//' nas-deploy/*.sh` 修正 |
 
 ## 设计要点(为什么这样部署)
 

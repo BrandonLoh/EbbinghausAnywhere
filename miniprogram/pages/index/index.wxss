@@ -1,0 +1,55 @@
+.hero {
+  margin-top: 40rpx;
+}
+
+.hello {
+  font-size: 40rpx;
+  font-weight: 600;
+}
+
+.sub {
+  margin-top: 12rpx;
+  color: #6c757d;
+  font-size: 26rpx;
+}
+
+.due-card {
+  text-align: center;
+  padding: 56rpx 32rpx;
+}
+
+.due-num {
+  font-size: 96rpx;
+  font-weight: 700;
+  color: #007bff;
+  line-height: 1.1;
+}
+
+.due-label {
+  margin-top: 8rpx;
+  color: #6c757d;
+  font-size: 28rpx;
+}
+
+.due-action {
+  margin-top: 24rpx;
+  color: #007bff;
+  font-size: 30rpx;
+}
+
+.pick-card {
+  display: flex;
+  align-items: center;
+}
+
+.pick-icon {
+  margin-right: 16rpx;
+}
+
+.pick-text {
+  flex: 1;
+}
+
+.pick-arrow {
+  color: #adb5bd;
+}

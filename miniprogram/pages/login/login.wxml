@@ -1,0 +1,43 @@
+<view class="page login-page">
+
+  <view class="brand">
+    <view class="brand-title">万物皆可艾宾浩斯</view>
+    <view class="brand-sub">首次使用请用主站账号绑定，之后自动登录</view>
+  </view>
+
+  <view class="card">
+    <view class="form-item">
+      <view class="label">账号</view>
+      <input
+        class="input"
+        placeholder="主站用户名"
+        value="{{username}}"
+        bindinput="onUsername"
+        confirm-type="next"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="label">密码</view>
+      <input
+        class="input"
+        password
+        placeholder="主站密码"
+        value="{{password}}"
+        bindinput="onPassword"
+        confirm-type="done"
+        bindconfirm="onBind"
+      />
+    </view>
+
+    <button class="btn-primary block" bindtap="onBind" disabled="{{submitting}}" loading="{{submitting}}">
+      绑定微信并登录
+    </button>
+
+    <view class="hint" bindtap="onDirectLogin">
+      仅登录（暂不绑定微信，调试用）
+    </view>
+  </view>
+
+  <view class="footnote">绑定后，主站和本小程序共用同一套数据</view>
+</view>

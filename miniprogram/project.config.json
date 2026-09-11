@@ -1,0 +1,19 @@
+{
+  "description": "万物皆可艾宾浩斯 小程序端",
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "ebbinghaus-anywhere",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "minifyWXSS": true,
+    "minifyWXML": true
+  },
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  }
+}

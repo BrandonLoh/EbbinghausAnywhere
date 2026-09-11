@@ -1,0 +1,51 @@
+.date-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx 0;
+}
+
+.date-picker {
+  color: #007bff;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.date-count {
+  color: #6c757d;
+  font-size: 26rpx;
+}
+
+.group-title {
+  margin: 32rpx 32rpx 8rpx;
+  color: #495057;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.list-card {
+  padding: 0 32rpx;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 0;
+  border-bottom: 2rpx solid #f1f3f5;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  flex: 1;
+  margin-right: 16rpx;
+  font-size: 32rpx;
+  word-break: break-all;
+}
+
+.item-tags {
+  flex-shrink: 0;
+}

@@ -1,0 +1,52 @@
+.login-page {
+  padding-top: 120rpx;
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.brand-title {
+  font-size: 46rpx;
+  font-weight: 600;
+  color: #007bff;
+}
+
+.brand-sub {
+  margin-top: 16rpx;
+  color: #6c757d;
+  font-size: 26rpx;
+}
+
+.form-item {
+  margin-bottom: 32rpx;
+}
+
+.label {
+  margin-bottom: 12rpx;
+  color: #495057;
+  font-size: 28rpx;
+}
+
+.input {
+  border: 2rpx solid #dee2e6;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 30rpx;
+}
+
+.hint {
+  margin-top: 32rpx;
+  text-align: center;
+  color: #6c757d;
+  font-size: 26rpx;
+  text-decoration: underline;
+}
+
+.footnote {
+  margin-top: 60rpx;
+  text-align: center;
+  color: #adb5bd;
+  font-size: 24rpx;
+}

@@ -204,7 +204,11 @@ nas-deploy/
 
 ---
 
-## 4. 里程碑 M3-M5:微信小程序(原生)
+## 4. 里程碑 M3-M5:微信小程序(原生) —— 🔄 M3 骨架已完成(2026-09-12)
+
+> 交付物:`miniprogram/` 原生小程序工程(4 个页面 + API 封装),
+> 已通过 JSON/JS 语法校验,待微信开发者工具联调。
+> 使用说明见 [miniprogram/README.md](../miniprogram/README.md)。
 
 ### 4.1 工程结构
 

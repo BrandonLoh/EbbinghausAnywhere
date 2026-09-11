@@ -14,6 +14,7 @@ Ebbinghaus Anywhere (万物皆可艾宾浩斯) is a multi‑user spaced‑repeti
 - `api/` – REST API app (DRF, `/api/v1/`): auth (password + WeChat `code2session` binding), review, items, and a superuser‑only full snapshot endpoint used by NAS sync. Token auth via `rest_framework.authtoken`.
 - `api/snapshot.py` – snapshot build/validate/restore core shared by the snapshot endpoint and the sync commands.
 - `nas-deploy/` – Docker deployment for the NAS replica (Dockerfile, docker-compose.yml, entrypoint.sh, sync.sh). See `docs/DEPLOY_NAS.md`.
+- `miniprogram/` – Native WeChat mini‑program client (M3): silent WeChat login + account binding, review loop (YES/NO/RESET), pronunciation playback. Talks to the PA API; backend URL lives in `miniprogram/utils/api.js`. See `miniprogram/README.md`.
 - `docs/ARCHITECTURE_PLAN.md` – Architecture plan for the API, NAS sync, and WeChat mini‑program (M1/M2 done; M3 pending).
 - `scripts/` – One‑off data tools (not part of the Django app; needs `DEEPSEEK_API_KEY` env var).
 - `templates/` – Base HTML templates.

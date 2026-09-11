@@ -1,0 +1,23 @@
+<view class="page">
+
+  <view class="card hero">
+    <view class="hello">你好，{{displayName || '…'}}</view>
+    <view class="sub">已坚持 {{stats.days_since_first_item}} 天 · 共 {{stats.total_items}} 个条目</view>
+  </view>
+
+  <view class="card due-card" bindtap="goToday">
+    <view class="due-num">{{stats.today_due}}</view>
+    <view class="due-label">今日待复习</view>
+    <view class="due-action">开始复习 〉</view>
+  </view>
+
+  <picker mode="date" value="{{today}}" bindchange="onPickDate">
+    <view class="card pick-card">
+      <view class="pick-icon">📅</view>
+      <view class="pick-text">选择其它日期复习</view>
+      <view class="pick-arrow">〉</view>
+    </view>
+  </picker>
+
+  <view class="link" bindtap="onLogout">退出登录</view>
+</view>

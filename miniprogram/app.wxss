@@ -1,0 +1,81 @@
+/* 全局样式 */
+page {
+  background: #f8f9fa;
+  color: #212529;
+  font-size: 30rpx;
+  line-height: 1.6;
+}
+
+.page {
+  padding-bottom: 48rpx;
+}
+
+/* 按钮:去掉默认边框 */
+button::after {
+  border: none;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  margin: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.btn-primary {
+  background: #007bff;
+  color: #ffffff;
+  border-radius: 14rpx;
+  font-size: 32rpx;
+}
+
+.btn-primary[disabled] {
+  background: #007bff;
+  color: #ffffff;
+  opacity: 0.5;
+}
+
+.block {
+  margin: 24rpx;
+}
+
+/* 标签 */
+.tag {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  margin-right: 12rpx;
+}
+
+.tag-day {
+  background: #e7f1ff;
+  color: #0d6efd;
+}
+
+.tag-ok {
+  background: #e6f7ec;
+  color: #198754;
+}
+
+.tag-todo {
+  background: #fff3cd;
+  color: #997404;
+}
+
+/* 通用 */
+.link {
+  text-align: center;
+  color: #6c757d;
+  font-size: 26rpx;
+  margin-top: 40rpx;
+  text-decoration: underline;
+}
+
+.empty {
+  text-align: center;
+  color: #6c757d;
+  margin-top: 140rpx;
+  font-size: 28rpx;
+}

@@ -1,0 +1,37 @@
+<view class="page">
+
+  <!-- 日期选择 -->
+  <view class="date-bar">
+    <picker mode="date" value="{{date}}" bindchange="onPickDate">
+      <view class="date-picker">{{date}} ▾</view>
+    </picker>
+    <view class="date-count" wx:if="{{!loading}}">共 {{totalCount}} 条</view>
+  </view>
+
+  <!-- 空态 -->
+  <view class="empty" wx:if="{{!loading && totalCount === 0}}">
+    这一天没有需要复习的内容 🎉
+  </view>
+
+  <!-- 按类别分组 -->
+  <block wx:for="{{groups}}" wx:key="id">
+    <view class="group-title">{{item.name}}</view>
+    <view class="card list-card">
+      <view
+        class="item-row"
+        wx:for="{{item.items}}"
+        wx:for-item="it"
+        wx:key="id"
+        data-id="{{it.id}}"
+        bindtap="goItem"
+      >
+        <view class="item-name">{{it.item || '(空条目)'}}</view>
+        <view class="item-tags">
+          <text class="tag tag-day">Day {{it.review_day}}</text>
+          <text class="tag {{it.proficiency === 1 ? 'tag-ok' : 'tag-todo'}}">{{it.proficiency_label}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+</view>

@@ -170,3 +170,10 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 *.xlsx
+
+# collectstatic 生成目录(部署时在目标机器生成, 不入库)
+/staticfiles/
+
+# NAS 部署运行时数据(数据库、快照、本地 .env)
+nas-deploy/data/
+snapshots/

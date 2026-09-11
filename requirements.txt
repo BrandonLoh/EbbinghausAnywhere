@@ -11,6 +11,12 @@ openpyxl==3.1.5
 requests==2.34.2
 Markdown==3.10.3
 
+# ---- 以下仅 NAS 副本容器需要(主库 PA 与本地开发不安装)----
+# 生产级 WSGI 服务器:
+# gunicorn==23.0.0
+# 容器内静态文件服务(settings 仅在 EAW_ROLE=replica 时启用其中间件):
+# whitenoise==6.12.0
+
 # 仅 scripts/ 下的一次性数据整理脚本需要(正常部署可省略):
 # pandas
 # openai

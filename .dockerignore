@@ -1,0 +1,38 @@
+# 构建上下文排除清单(NAS 镜像)
+# 目的: 缩小镜像、避免把本地数据库/密钥/日志打进镜像
+
+# 版本控制与本地环境
+.git
+.gitignore
+venv/
+.venv/
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+
+# 本地数据与日志(副本的数据一律来自同步, 不来自镜像)
+db.sqlite3
+*.sqlite3
+debug.log
+*.log
+snapshots/
+
+# 敏感配置: 由运行时通过 env_file 注入, 不进镜像
+.env
+.env.*
+EbbinghausAnywhere/local_settings.py
+nas-deploy/.env
+
+# 开发资料与一次性脚本
+docs/
+scripts/
+EAW/tests/
+api/tests/
+.claude/
+CLAUDE.md
+*.xlsx
+
+# 本地产物
+staticfiles/
+nas-deploy/data/

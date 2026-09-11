@@ -1,0 +1,30 @@
+# Ebbinghaus Anywhere —— NAS 副本(docker compose)
+#
+# 用法:
+#   cp .env.example .env   # 填写配置
+#   docker compose up -d --build
+#   docker compose logs -f          # 查看日志
+#
+# 角色: 本实例是只读副本(replica)。数据由每日定时任务从主库(PA)单向拉取,
+# 在 NAS 上的任何录入/修改都会在下次同步时被覆盖。
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: nas-deploy/Dockerfile
+    image: ebbinghaus-nas:latest
+    container_name: ebbinghaus-nas
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # 固定为 replica:启用角色守卫与 WhiteNoise 静态文件服务
+      EAW_ROLE: replica
+      # SQLite 数据库放在挂载卷里, 重建容器不丢数据
+      DATABASE_URL: sqlite:////data/db.sqlite3
+      EAW_SNAPSHOT_DIR: /data/snapshots
+    volumes:
+      - ./data:/data
+    ports:
+      # 左边是 NAS 上的端口, 如与现有服务冲突可改为 8081 等
+      - "8080:8000"

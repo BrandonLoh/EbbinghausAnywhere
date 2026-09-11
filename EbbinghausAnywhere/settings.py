@@ -32,6 +32,13 @@ SECRET_KEY = env('SECRET_KEY')
 
 ALLOWED_HOSTS = ['*']
 
+# 显式读取 DEBUG(默认 False); local_settings 若有定义仍会覆盖此处
+DEBUG = env('DEBUG', default=False)
+
+# 实例角色: master(默认, 主库 = PythonAnywhere) / replica(副本, 如 NAS)。
+# 仅用于安全守卫(sync/restore 命令只在 replica 上允许执行), 不改变主库任何行为。
+EAW_ROLE = env('EAW_ROLE', default='master')
+
 
 # Application definition
 
@@ -58,6 +65,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# NAS 副本运行在容器内, 没有独立的静态文件服务, 由 WhiteNoise 直接从 Django 提供;
+# 主库(PA)与本地开发不启用, 行为完全不变。
+if EAW_ROLE == 'replica':
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
 ROOT_URLCONF = "EbbinghausAnywhere.urls"
 
 TEMPLATES = [
@@ -81,6 +93,18 @@ WSGI_APPLICATION = "EbbinghausAnywhere.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+#
+# 默认值: 环境变量 DATABASE_URL(容器/NAS, 如 sqlite:////data/db.sqlite3),
+# 否则本地 SQLite。文件末尾的 local_settings 导入可覆盖此处;
+# 若显式设置了 DATABASE_URL, 则其优先级最高(见文件末尾)。
+DATABASES = {
+    'default': env.db('DATABASE_URL', default=f"sqlite:///{(BASE_DIR / 'db.sqlite3').as_posix()}"),
+}
+
+# NAS 同步配置(仅副本实例需要; 主库不设置这些变量)
+EAW_SYNC_URL = env('EAW_SYNC_URL', default='')
+EAW_SYNC_TOKEN = env('EAW_SYNC_TOKEN', default='')
+EAW_SNAPSHOT_DIR = env('EAW_SNAPSHOT_DIR', default=str(BASE_DIR / 'snapshots'))
 
 
 
@@ -189,3 +213,8 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+# 显式设置 DATABASE_URL 时其优先级高于 local_settings(便于以环境变量切换数据库:
+# NAS 容器部署、本地同步演练)。PA 的 .env 未设置该变量, 行为与之前完全一致。
+if env('DATABASE_URL', default=''):
+    DATABASES = {'default': env.db('DATABASE_URL')}

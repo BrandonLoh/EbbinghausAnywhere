@@ -12,7 +12,9 @@ Ebbinghaus Anywhere (万物皆可艾宾浩斯) is a multi‑user spaced‑repeti
 - `EbbinghausAnywhere/` – Django project settings (`settings.py`, `urls.py`, `wsgi.py`).
 - `EAW/` – Main Django app (models, views, templates, static files).
 - `api/` – REST API app (DRF, `/api/v1/`): auth (password + WeChat `code2session` binding), review, items, and a superuser‑only full snapshot endpoint used by NAS sync. Token auth via `rest_framework.authtoken`.
-- `docs/ARCHITECTURE_PLAN.md` – Architecture plan for the API, NAS sync, and WeChat mini‑program (M1 done; M2/M3 pending).
+- `api/snapshot.py` – snapshot build/validate/restore core shared by the snapshot endpoint and the sync commands.
+- `nas-deploy/` – Docker deployment for the NAS replica (Dockerfile, docker-compose.yml, entrypoint.sh, sync.sh). See `docs/DEPLOY_NAS.md`.
+- `docs/ARCHITECTURE_PLAN.md` – Architecture plan for the API, NAS sync, and WeChat mini‑program (M1/M2 done; M3 pending).
 - `scripts/` – One‑off data tools (not part of the Django app; needs `DEEPSEEK_API_KEY` env var).
 - `templates/` – Base HTML templates.
 - `static/` and `staticfiles/` – Static assets (CSS, JavaScript, images).
@@ -105,5 +107,6 @@ Access the site at http://localhost:8000.
 - Baidu translation API is optional; if not configured, translation features will be disabled.
 - MathJax/mhchem and Markdown rendering (marked + DOMPurify) are client-side; item content is rendered by `static/js/markdown_render.js` on elements with `data-markdown`.
 - REST API (`/api/v1/`) uses DRF Token auth: `POST /api/v1/auth/login/` for a token, then `Authorization: Token <key>`. All registered users have `is_staff=True` — never use DRF's `IsAdminUser` for privileged endpoints; use `api.permissions.IsSuperUser` (the snapshot endpoint already does).
+- NAS replica sync: `EAW_ROLE` (`master` default / `replica`) guards `sync_snapshot` and `restore_snapshot` management commands — they refuse to run unless `EAW_ROLE=replica`, so a stale snapshot can never overwrite the master. The replica container also enables WhiteNoise for static files and reads `DATABASE_URL` (e.g. `sqlite:////data/db.sqlite3`); the master (PA) is unaffected by all of these.
 - The `EAW` app contains the core flashcard logic, models, and views.
 - Refer to the `README.md` for detailed user instructions and deployment guidelines.

@@ -103,7 +103,12 @@ api/                        # 新 Django app,与 EAW 平级
 
 ---
 
-## 3. 里程碑 M2:NAS 部署 + 每日单向同步
+## 3. 里程碑 M2:NAS 部署 + 每日单向同步 —— ✅ 代码与演练完成(2026-09-11)
+
+> 交付物:`api/snapshot.py`(快照核心库)、`sync_snapshot` / `restore_snapshot` 命令、
+> 28 个同步测试(全项目 153 个测试全绿)、`nas-deploy/` 部署物、
+> 本地端到端演练通过(19 用户 / 9218 条目,数据逐条一致、幂等、角色守卫生效)。
+> 部署步骤见 [DEPLOY_NAS.md](DEPLOY_NAS.md)。
 
 ### 3.1 同步模型:pull + 每日全量快照
 
@@ -130,27 +135,35 @@ api/                        # 新 Django app,与 EAW 平级
 - **不含 authtoken 表** → 令牌是实例本地的,PA 的 syncbot token 在 NAS 上无效,从机制上杜绝跨实例误用;
 - 不用 `dumpdata`:auth 的 permissions 外键依赖 contenttypes,跨实例恢复易踩坑;自定义格式只含业务数据,DB 无关(PA 是 MySQL、NAS 是 SQLite 也无影响)。
 
-### 3.3 NAS 端恢复命令
+### 3.3 NAS 端命令(实现名:`sync_snapshot` / `restore_snapshot`)
 
-`python manage.py restore_snapshot --file snapshot.json`:
-- 事务内执行:校验 meta → 用户 **upsert**(绝不删除 NAS 本地管理员账号)→ Category/ReviewDay/Item 按外键顺序全删重建;
+两个管理命令,共用一个核心库 `api/snapshot.py`:
+
+```
+python manage.py sync_snapshot [--keep 7] [--dry-run]   # 每日同步入口(下载→校验→落盘→恢复)
+python manage.py restore_snapshot --file snapshot.json  # 离线恢复指定快照文件
+```
+
+- 事务内执行:校验 meta 与外键完整性 → 用户 **upsert**(绝不删除 NAS 本地管理员账号)→ Category/ReviewDay/Item/WeChatProfile 全删重建(保留主键,用户外键按"快照 id → 本地用户"映射重写);
 - 幂等:重复执行结果一致;失败整体回滚,旧数据保留;
-- **角色守卫**:仅当环境变量 `EAW_ROLE=replica` 时允许执行(只在 NAS 的 .env 中设置);PA 上不设该变量,即使在 PA 控制台误跑该命令也会直接拒绝——防止旧快照反向覆盖主库。
+- **先校验后落盘**:非法快照不会保存也不会触碰数据库;
+- **角色守卫**:仅当环境变量 `EAW_ROLE=replica` 时允许执行(只在 NAS 的 .env 中设置),且守卫在**下载之前**生效;PA 上不设该变量,即使在 PA 控制台误跑也会直接拒绝——防止旧快照反向覆盖主库。
 
-### 3.4 NAS 部署物(docker-compose)
+### 3.4 NAS 部署物(docker-compose) —— ✅ 已实现
 
 ```
 nas-deploy/
-├── docker-compose.yml     # web 服务:gunicorn + SQLite(挂 volume)
-├── Dockerfile             # Python 3.11-slim + requirements.txt
-├── .env                   # SECRET_KEY、SYNC_TOKEN(专用快照账号的 token)
-└── sync/
-    ├── sync.sh            # 拉取→临时文件→JSON/行数校验→restore_snapshot→清理
-    └── snapshots/         # 保留最近 7 份,供回滚
+├── docker-compose.yml     # web 服务:gunicorn + whitenoise + SQLite(挂 ./data 卷)
+├── Dockerfile             # python:3.11-slim + 主依赖 + gunicorn/whitenoise
+├── entrypoint.sh          # 容器启动: migrate → collectstatic → gunicorn
+├── .env.example           # SECRET_KEY 与同步 token 模板(复制为 .env)
+└── sync.sh                # 同步入口, 由 NAS 任务计划 04:00 调用
 ```
 
-- 群晖「任务计划」(或 QNAP crontab)每天 **04:00** 执行 `sync.sh`;
-- 失败处理:任一步骤失败即中止并保留当前库,日志留痕;可选接群晖通知推送。
+- 数据卷 `nas-deploy/data/` 同时放 SQLite 数据库与 `snapshots/`(保留最近 7 份,供回滚);
+- 仓库根 `.dockerignore` 确保本地数据库/密钥/日志不进镜像;
+- 群晖「任务计划」(或 QNAP crontab)每天 **04:00** 执行 `sync.sh`(自动识别 `docker compose` / `docker-compose`);
+- 失败处理:任一步骤失败即中止并保留当前库,退出码非 0;群晖任务计划可配置失败邮件通知。
 
 ### 3.5 验收标准
 
@@ -255,13 +268,13 @@ token 存本地 storage,后续请求带 Authorization: Token xxx
 
 ## 6. 实施顺序与工作量预估(单人 + AI 协作)
 
-| 里程碑 | 内容 | 预估 |
-|---|---|---|
-| M1 | API 基座 + 认证 + 全部业务端点 + 测试 | 1-2 个晚上 |
-| M2 | 快照端点 + restore 命令 + docker-compose + sync.sh + NAS 现场调试 | 1 个晚上 + NAS 侧调试 |
-| M3 | 小程序骨架 + 绑定登录 + 复习闭环(纯文本) | 2-3 个晚上 |
-| M4 | 列表/搜索/详情 + TTS + towxml Markdown | 2 个晚上 |
-| M5 | 打磨(统计/录入/体验版分发) | 按需 |
+| 里程碑 | 内容 | 预估 | 状态 |
+|---|---|---|---|
+| M1 | API 基座 + 认证 + 全部业务端点 + 测试 | 1-2 个晚上 | ✅ 已上线(2.1.0.2) |
+| M2 | 快照核心库 + sync/restore 命令 + docker-compose + sync.sh + 本地演练 | 1 个晚上 + NAS 侧调试 | ✅ 代码完成,待 NAS 部署 |
+| M3 | 小程序骨架 + 绑定登录 + 复习闭环(纯文本) | 2-3 个晚上 | 待开始 |
+| M4 | 列表/搜索/详情 + TTS + towxml Markdown | 2 个晚上 | 待开始 |
+| M5 | 打磨(统计/录入/体验版分发) | 按需 | 待开始 |
 
 顺序即依赖:M1 是 M2(快照走 API)和 M3(小程序调 API)的共同地基,先行实施。
 

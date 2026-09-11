@@ -56,6 +56,12 @@ def ReviewView(request, year, month, day):
         category_name = item.category.name if item.category else '未分类'
         output.setdefault(category_name, []).append([checkdays[item.initDate], item, detail_url])
 
+    # ==================== 新增：按间隔天数（从小到大）排序 ====================
+    for category_name in output:
+        # x[0] 即 checkdays[item.initDate] (天数)，按照天数升序排序
+        output[category_name].sort(key=lambda x: x[0])
+    # ========================================================================
+
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         # AJAX 场景:返回片段,由前端注入页面并触发 Markdown/MathJax 渲染
         return HttpResponse(render_to_string('review_day.html', {'output': output, 'reviewdate': reviewDate}, request))

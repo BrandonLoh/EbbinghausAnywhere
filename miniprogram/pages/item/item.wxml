@@ -1,39 +1,34 @@
 <view class="page" wx:if="{{item}}">
 
   <!-- 标题区 -->
-  <view class="card">
-    <view class="item-title">{{item.item || '(空条目)'}}</view>
-
-    <view class="meta-row">
-      <text class="tag tag-day" wx:if="{{item.category_name}}">{{item.category_name}}</text>
-      <text class="tag {{item.proficiency === 1 ? 'tag-ok' : 'tag-todo'}}">{{item.proficiency_label}}</text>
+  <view class="detail-head">
+    <view class="detail-title">{{item.item || '(空条目)'}}</view>
+    <view class="detail-chips">
+      <text class="chip chip-muted" wx:if="{{item.category_name}}">{{item.category_name}}</text>
+      <text class="chip {{item.proficiency === 1 ? 'chip-success' : 'chip-warning'}}">{{item.proficiency_label}}</text>
     </view>
 
-    <!-- 音标 -->
-    <view class="phonetics" wx:if="{{item.us_phonetic || item.uk_phonetic}}">
-      <text class="phonetic" wx:if="{{item.uk_phonetic}}">英 /{{item.uk_phonetic}}/</text>
-      <text class="phonetic" wx:if="{{item.us_phonetic}}">美 /{{item.us_phonetic}}/</text>
-    </view>
+    <view class="phonetic" wx:if="{{item.uk_phonetic}}">英 /{{item.uk_phonetic}}/</view>
+    <view class="phonetic" wx:if="{{item.us_phonetic}}">美 /{{item.us_phonetic}}/</view>
 
-    <!-- 发音 -->
-    <view class="tts-btn" wx:if="{{item.src_tts}}" bindtap="playTts">🔊 播放发音</view>
+    <view class="tts-btn" wx:if="{{item.src_tts}}" bindtap="playTts" hover-class="tts-btn-active">🔊 播放发音</view>
 
-    <view class="meta-row dates">
+    <view class="detail-dates">
       <text>录入 {{item.inputDate}}</text>
-      <text>周期起算 {{item.initDate}}</text>
+      <text>起算 {{item.initDate}}</text>
     </view>
   </view>
 
-  <!-- 内容(纯文本,保留换行) -->
-  <view class="card">
+  <!-- 内容(大字号,适合手机阅读) -->
+  <view class="content-card">
     <view class="content" user-select="{{true}}">{{item.content || '（暂无内容）'}}</view>
   </view>
 
-  <!-- 反馈按钮 -->
+  <!-- 反馈(底部固定) -->
   <view class="feedback-bar">
-    <button class="fb-btn fb-yes" data-action="yes" bindtap="onFeedback" disabled="{{feedbacking}}">YES</button>
-    <button class="fb-btn fb-no" data-action="no" bindtap="onFeedback" disabled="{{feedbacking}}">NO</button>
-    <button class="fb-btn fb-reset" data-action="reset" bindtap="onFeedback" disabled="{{feedbacking}}">RESET</button>
+    <button class="btn fb-btn btn-success" data-action="yes" bindtap="onFeedback" disabled="{{feedbacking}}">YES</button>
+    <button class="btn fb-btn btn-danger" data-action="no" bindtap="onFeedback" disabled="{{feedbacking}}">NO</button>
+    <button class="btn fb-btn btn-warning" data-action="reset" bindtap="onFeedback" disabled="{{feedbacking}}">RESET</button>
   </view>
 
 </view>

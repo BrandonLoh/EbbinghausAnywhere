@@ -1,11 +1,14 @@
 <view class="page">
 
-  <!-- 日期选择 -->
-  <view class="date-bar">
+  <!-- 顶部日期条(吸顶):点日期换天 -->
+  <view class="review-top">
     <picker mode="date" value="{{date}}" bindchange="onPickDate">
-      <view class="date-picker">{{date}} ▾</view>
+      <view class="date-pill" hover-class="date-pill-active">
+        <text class="date-text">{{date}}</text>
+        <text class="date-caret">▾</text>
+      </view>
     </picker>
-    <view class="date-count" wx:if="{{!loading}}">共 {{totalCount}} 条</view>
+    <view class="review-count" wx:if="{{!loading}}">共 {{totalCount}} 条</view>
   </view>
 
   <!-- 空态 -->
@@ -13,23 +16,30 @@
     这一天没有需要复习的内容 🎉
   </view>
 
-  <!-- 按类别分组 -->
+  <!-- 分组列表 -->
   <block wx:for="{{groups}}" wx:key="id">
-    <view class="group-title">{{item.name}}</view>
-    <view class="card list-card">
+    <view class="section">
+      <text class="section-name">{{item.name}}</text>
+      <text class="section-count">{{item.items.length}} 条</text>
+    </view>
+    <view class="list">
       <view
-        class="item-row"
+        class="list-item"
         wx:for="{{item.items}}"
         wx:for-item="it"
         wx:key="id"
         data-id="{{it.id}}"
         bindtap="goItem"
+        hover-class="is-pressed"
       >
-        <view class="item-name">{{it.item || '(空条目)'}}</view>
-        <view class="item-tags">
-          <text class="tag tag-day">Day {{it.review_day}}</text>
-          <text class="tag {{it.proficiency === 1 ? 'tag-ok' : 'tag-todo'}}">{{it.proficiency_label}}</text>
+        <view class="row-main">
+          <view class="row-title">{{it.item || '(空条目)'}}</view>
+          <view class="row-meta">
+            <text class="chip chip-primary">Day {{it.review_day}}</text>
+            <text class="chip {{it.proficiency === 1 ? 'chip-success' : 'chip-warning'}}">{{it.proficiency_label}}</text>
+          </view>
         </view>
+        <view class="chevron">›</view>
       </view>
     </view>
   </block>

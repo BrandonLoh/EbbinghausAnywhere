@@ -1,55 +1,31 @@
-.hero {
-  margin-top: 40rpx;
-}
-
-.hello {
-  font-size: 40rpx;
-  font-weight: 600;
-}
-
-.sub {
-  margin-top: 12rpx;
-  color: #6c757d;
-  font-size: 26rpx;
-}
-
 .due-card {
   text-align: center;
-  padding: 56rpx 32rpx;
-}
-
-.due-num {
-  font-size: 96rpx;
-  font-weight: 700;
-  color: #007bff;
-  line-height: 1.1;
 }
 
 .due-label {
-  margin-top: 8rpx;
+  font-size: 26rpx;
   color: #6c757d;
-  font-size: 28rpx;
 }
 
-.due-action {
+.due-num {
+  margin: 8rpx 0 32rpx;
+  font-size: 112rpx;
+  font-weight: 700;
+  color: #1d809f;
+  line-height: 1.1;
+}
+
+/* 退出登录:居中红色行 */
+.logout-list {
   margin-top: 24rpx;
-  color: #007bff;
-  font-size: 30rpx;
 }
 
-.pick-card {
-  display: flex;
-  align-items: center;
+.logout-item {
+  justify-content: center;
 }
 
-.pick-icon {
-  margin-right: 16rpx;
-}
-
-.pick-text {
-  flex: 1;
-}
-
-.pick-arrow {
-  color: #adb5bd;
+.logout-text {
+  color: #dc3545;
+  font-size: 32rpx;
+  font-weight: 500;
 }

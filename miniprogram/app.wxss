@@ -1,81 +1,204 @@
-/* 全局样式 */
+/* ============================================================
+   全局样式 —— 现代移动端风格,配色与网页版保持一致
+   色板取自网页版定制编译的 Bootstrap 5 主题:
+     primary #1d809f  深 #17667f  浅底 #d2e6ec
+     正文 #212529  次要 #6c757d  背景 #f8f9fa  分隔 #f1f3f5
+     success #198754  danger #dc3545  warning #ffc107
+   字号约定: 正文 32rpx / 条目名 36rpx / 次要 26rpx / 标签 24rpx
+   ============================================================ */
 page {
   background: #f8f9fa;
   color: #212529;
-  font-size: 30rpx;
+  font-size: 32rpx;
   line-height: 1.6;
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 .page {
   padding-bottom: 48rpx;
 }
 
-/* 按钮:去掉默认边框 */
+/* 按钮:去掉小程序默认边框 */
 button::after {
   border: none;
 }
 
+/* ---------- 卡片 ---------- */
 .card {
-  background: #ffffff;
-  border-radius: 20rpx;
-  padding: 32rpx;
   margin: 24rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  padding: 36rpx 40rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
 }
 
-.btn-primary {
-  background: #007bff;
-  color: #ffffff;
-  border-radius: 14rpx;
+/* ---------- 分组列表 ---------- */
+.list {
+  margin: 0 24rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  min-height: 112rpx;
+  padding: 28rpx 32rpx;
+  background: #ffffff;
+}
+
+.list-item + .list-item {
+  border-top: 2rpx solid #f1f3f5;
+}
+
+/* 按压反馈(hover-class);放在 .list-item 之后保证生效 */
+.is-pressed {
+  background: #f1f3f5;
+}
+
+.row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.row-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.row-sub {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: #6c757d;
+}
+
+.row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12rpx;
+}
+
+.chevron {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  color: #ced4da;
+  font-size: 44rpx;
+  line-height: 1;
+}
+
+/* ---------- 分组标题 ---------- */
+.section {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 36rpx 40rpx 16rpx;
+}
+
+.section-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #495057;
+}
+
+.section-count {
+  font-size: 24rpx;
+  color: #adb5bd;
+}
+
+/* ---------- 标签 ---------- */
+.chip {
+  display: inline-block;
+  margin-right: 12rpx;
+  padding: 4rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.chip-primary { background: #d2e6ec; color: #17667f; }
+.chip-success { background: #e6f4ec; color: #198754; }
+.chip-warning { background: #fff4d6; color: #997404; }
+.chip-muted   { background: #f1f3f5; color: #6c757d; }
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 88rpx;
+  padding: 0 32rpx;
+  border-radius: 16rpx;
+  font-family: inherit;
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-lg {
+  height: 96rpx;
+  font-size: 34rpx;
+}
+
+.btn[disabled] {
+  opacity: 0.6;
+}
+
+.btn.btn-primary { background: #1d809f; color: #ffffff; }
+.btn.btn-success { background: #198754; color: #ffffff; }
+.btn.btn-danger  { background: #dc3545; color: #ffffff; }
+.btn.btn-warning { background: #ffc107; color: #212529; }
+
+/* 禁用时保持配色(压过小程序按钮内置的置灰样式) */
+.btn.btn-primary[disabled] { background: #1d809f; color: #ffffff; }
+.btn.btn-success[disabled] { background: #198754; color: #ffffff; }
+.btn.btn-danger[disabled]  { background: #dc3545; color: #ffffff; }
+.btn.btn-warning[disabled] { background: #ffc107; color: #212529; }
+
+/* ---------- 输入框(填充式,无边框) ---------- */
+.input-lg {
+  box-sizing: border-box;
+  width: 100%;
+  height: 96rpx;
+  padding: 0 32rpx;
+  background: #f1f3f5;
+  border-radius: 20rpx;
+  color: #212529;
+  font-family: inherit;
   font-size: 32rpx;
 }
 
-.btn-primary[disabled] {
-  background: #007bff;
+/* ---------- 顶部品牌区 ---------- */
+.hero {
+  padding: 56rpx 40rpx 64rpx;
+  background: linear-gradient(135deg, #1d809f 0%, #17667f 100%);
+  border-radius: 0 0 40rpx 40rpx;
   color: #ffffff;
-  opacity: 0.5;
 }
 
-.block {
-  margin: 24rpx;
+.hero-title {
+  font-size: 44rpx;
+  font-weight: 700;
 }
 
-/* 标签 */
-.tag {
-  display: inline-block;
-  font-size: 22rpx;
-  padding: 4rpx 16rpx;
-  border-radius: 999rpx;
-  margin-right: 12rpx;
-}
-
-.tag-day {
-  background: #e7f1ff;
-  color: #0d6efd;
-}
-
-.tag-ok {
-  background: #e6f7ec;
-  color: #198754;
-}
-
-.tag-todo {
-  background: #fff3cd;
-  color: #997404;
-}
-
-/* 通用 */
-.link {
-  text-align: center;
-  color: #6c757d;
+.hero-sub {
+  margin-top: 12rpx;
   font-size: 26rpx;
-  margin-top: 40rpx;
-  text-decoration: underline;
+  color: rgba(255, 255, 255, 0.85);
 }
 
+/* ---------- 通用 ---------- */
 .empty {
+  margin-top: 160rpx;
   text-align: center;
-  color: #6c757d;
-  margin-top: 140rpx;
+  color: #adb5bd;
   font-size: 28rpx;
 }

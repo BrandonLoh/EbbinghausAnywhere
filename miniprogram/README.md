@@ -10,6 +10,24 @@ Ebbinghaus Anywhere 的微信小程序客户端，复用主站(PythonAnywhere)�
 - 发音播放（百度 TTS 链接）
 - 条目内容暂以纯文本展示（M4 接入 Markdown / LaTeX 渲染）
 
+## 界面风格
+
+现代移动端风格，配色与网页版共用同一套色板（取自网页版定制编译的
+Bootstrap 5 主题，定义在 `static/bootstrap/css/bootstrap.min.css`）：
+
+| 用途 | 色值 |
+| --- | --- |
+| 主题色（导航栏 / 主按钮 / 强调文字 / 标签） | `#1d809f`（深 `#17667f`，浅底 `#d2e6ec`） |
+| 正文 / 页面背景 / 次要文字 | `#212529` / `#f8f9fa` / `#6c757d` |
+| 反馈按钮 绿 / 红 / 黄 | `#198754` / `#dc3545` / `#ffc107` |
+
+- 布局采用移动端的「分组列表 + 大号按钮」：列表行高 ≥ 112rpx、正文 32rpx、
+  条目名 36rpx、详情正文 36rpx（1.9 行高）；点按列表行有按压反馈
+- 元信息（Day N / 掌握度 / 分类）用圆角 pill 标签呈现，不再使用网页版的表格布局
+- 西文字体为网页版同款 Source Sans Pro：`app.js` 启动时用 `wx.loadFontFace`
+  从主站拉取字体文件，加载失败自动回退系统字体（不影响功能）
+- 改配色时请同步核对 `app.wxss` 顶部的色板注释与网页版主题文件
+
 ## 用微信开发者工具打开
 
 1. 安装[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)（Windows 稳定版）

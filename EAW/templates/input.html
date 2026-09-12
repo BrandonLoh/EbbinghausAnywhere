@@ -17,8 +17,9 @@
 
         <!-- Form Body -->
         <div class="card-body">
-            <form role="form" action="" method="post" enctype="multipart/form-data" autocomplete="off">
+            <form role="form" action="" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return guardSubmit();">
                 {% csrf_token %}
+                <input type="hidden" name="submit_token" value="{{ submit_token }}">
                 <div class="row g-3">
                     <!-- 日期选择 -->
                     <div class="col-md-6">
@@ -51,7 +52,7 @@
 
                     <!-- 提交按钮 -->
                     <div class="col-12 mt-4 text-center">
-                        <input type="submit" class="btn btn-success" value="保存">
+                        <input type="submit" id="submit-btn" class="btn btn-success" value="保存">
                     </div>
                 </div>
             </form>
@@ -73,6 +74,30 @@
     window.onload = function() {
         checkApiConfig();
     };
+
+    // 防重复提交:提交后立刻禁用按钮,避免双击/连按回车重复发请求
+    // (服务端还有一次性令牌兜底:即使请求真的发出去两次,也只会录入一次)
+    var submitting = false;
+    function guardSubmit() {
+        if (submitting) {
+            return false;
+        }
+        submitting = true;
+        var btn = document.getElementById('submit-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.value = '提交中…';
+        }
+        // 万一提交没跳转(校验失败/网络问题),5 秒后恢复按钮,避免卡死
+        setTimeout(function () {
+            submitting = false;
+            if (btn) {
+                btn.disabled = false;
+                btn.value = '保存';
+            }
+        }, 5000);
+        return true;
+    }
 
     function checkApiConfig() {
         // 发起AJAX请求检查API配置

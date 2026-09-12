@@ -1,48 +1,66 @@
-.item-title {
-  font-size: 44rpx;
-  font-weight: 600;
+.detail-head {
+  padding: 40rpx 40rpx 8rpx;
+}
+
+.detail-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 1.35;
   word-break: break-all;
 }
 
-.meta-row {
-  margin-top: 20rpx;
-}
-
-.meta-row.dates {
+.detail-chips {
   display: flex;
-  justify-content: space-between;
-  color: #adb5bd;
-  font-size: 24rpx;
-  margin-top: 28rpx;
-}
-
-.phonetics {
+  flex-wrap: wrap;
   margin-top: 20rpx;
 }
 
 .phonetic {
-  display: block;
-  color: #6c757d;
-  font-size: 28rpx;
-  margin-top: 6rpx;
+  margin-top: 16rpx;
+  font-size: 32rpx;
+  color: #495057;
 }
 
+/* 发音:浅底 pill 按钮 */
 .tts-btn {
-  display: inline-block;
-  margin-top: 24rpx;
-  padding: 12rpx 32rpx;
-  background: #e7f1ff;
-  color: #007bff;
+  display: inline-flex;
+  align-items: center;
+  height: 76rpx;
+  margin-top: 28rpx;
+  padding: 0 32rpx;
+  background: #d2e6ec;
   border-radius: 999rpx;
-  font-size: 28rpx;
+  color: #17667f;
+  font-size: 30rpx;
+  font-weight: 600;
 }
 
-/* 内容:保留换行,长词折行 */
+.tts-btn-active {
+  background: #c3dde6;
+}
+
+.detail-dates {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32rpx;
+  font-size: 24rpx;
+  color: #adb5bd;
+}
+
+/* 内容卡片:正文用 36rpx / 1.9 行高,手机上更好读 */
+.content-card {
+  margin: 24rpx;
+  padding: 36rpx 40rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
+}
+
 .content {
+  font-size: 36rpx;
+  line-height: 1.9;
   white-space: pre-line;
   word-break: break-all;
-  font-size: 30rpx;
-  line-height: 1.8;
 }
 
 /* 底部反馈栏 */
@@ -52,40 +70,17 @@
   right: 0;
   bottom: 0;
   display: flex;
-  padding: 20rpx 24rpx calc(20rpx + env(safe-area-inset-bottom));
+  padding: 16rpx 16rpx calc(16rpx + env(safe-area-inset-bottom));
   background: #ffffff;
-  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border-top: 2rpx solid #f1f3f5;
 }
 
 .fb-btn {
   flex: 1;
-  margin: 0 10rpx;
-  border-radius: 14rpx;
-  color: #ffffff;
-  font-size: 32rpx;
-}
-
-.fb-btn::after {
-  border: none;
-}
-
-.fb-btn[disabled] {
-  opacity: 0.6;
-}
-
-.fb-yes {
-  background: #28a745;
-}
-
-.fb-no {
-  background: #dc3545;
-}
-
-.fb-reset {
-  background: #ffc107;
-  color: #212529;
+  height: 96rpx;
+  margin: 0 8rpx;
 }
 
 .page {
-  padding-bottom: 180rpx; /* 给底部固定栏留空间 */
+  padding-bottom: 200rpx;   /* 给底部固定栏留空间 */
 }

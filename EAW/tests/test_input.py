@@ -1,5 +1,6 @@
 """录入视图与 split_string 测试。"""
 
+import re
 from datetime import date
 from unittest.mock import patch
 
@@ -96,3 +97,107 @@ class InputViewTests(TestCase):
             mock_translate.assert_not_called()
         item = Item.objects.get(user=self.user, item='过去时')
         self.assertEqual(item.content, '')
+
+
+class InputDuplicateSubmitTests(TestCase):
+    """录入页防重复提交:一次性令牌 + 空行过滤。"""
+
+    def setUp(self):
+        self.user = create_user_with_defaults('bob')
+        self.client.login(username='bob', password='pass-12345678')
+        self.word_category = Category.objects.get(user=self.user, name='单词')
+
+    def _get_submit_token(self):
+        response = self.client.get(reverse('input-view'))
+        match = re.search(r'name="submit_token" value="([^"]+)"', response.content.decode())
+        self.assertIsNotNone(match, '录入页应下发一次性提交令牌')
+        return match.group(1)
+
+    def _post_input(self, text, **extra):
+        payload = {
+            'input_date': '2026-01-01',
+            'category': self.word_category.pk,
+            'input': text,
+        }
+        payload.update(extra)
+        return self.client.post(reverse('input-view'), payload)
+
+    def _count_items(self):
+        return Item.objects.filter(user=self.user).count()
+
+    def test_replayed_submit_is_ignored(self):
+        """同一令牌重复提交(双击/网络中断后重试)只录入一次。"""
+        token = self._get_submit_token()
+        self._post_input('apple\r\nbanana', submit_token=token)
+        self.assertEqual(self._count_items(), 2)
+
+        response = self._post_input('apple\r\nbanana', submit_token=token)
+        self.assertRedirects(response, reverse('item-list'))
+        self.assertEqual(self._count_items(), 2, '重复提交不得重复建条目')
+
+    def test_replayed_submit_shows_message(self):
+        token = self._get_submit_token()
+        self._post_input('apple', submit_token=token)
+        response = self.client.post(
+            reverse('input-view'),
+            {
+                'input_date': '2026-01-01',
+                'category': self.word_category.pk,
+                'input': 'apple',
+                'submit_token': token,
+            },
+            follow=True,
+        )
+        self.assertContains(response, '没有重复录入')
+
+    def test_fresh_token_allows_resubmit(self):
+        """重新打开录入页拿到新令牌后,可以再录一次(应用本身允许重复录入)。"""
+        self._post_input('apple', submit_token=self._get_submit_token())
+        self._post_input('apple', submit_token=self._get_submit_token())
+        self.assertEqual(self._count_items(), 2)
+
+    def test_submit_without_token_still_works(self):
+        """没有令牌的提交照常处理(向后兼容,不阻塞正常录入)。"""
+        self._post_input('apple')
+        self.assertEqual(self._count_items(), 1)
+
+    def test_invalid_form_does_not_consume_token(self):
+        """校验失败不消耗令牌:修正后用同一令牌重提仍能录入。"""
+        token = self._get_submit_token()
+        bad = self.client.post(reverse('input-view'), {
+            'input_date': 'not-a-date',
+            'category': self.word_category.pk,
+            'input': 'apple',
+            'submit_token': token,
+        })
+        self.assertEqual(bad.status_code, 200)
+        self.assertEqual(self._count_items(), 0)
+
+        self._post_input('apple', submit_token=token)
+        self.assertEqual(self._count_items(), 1)
+
+    def test_submit_creates_message_on_list(self):
+        response = self.client.post(
+            reverse('input-view'),
+            {'input_date': '2026-01-01', 'category': self.word_category.pk, 'input': 'apple'},
+            follow=True,
+        )
+        self.assertContains(response, '已录入 1 个条目')
+
+    def test_blank_lines_are_skipped(self):
+        """空行 / 只有冒号的行不产生空名条目。"""
+        self._post_input('apple\r\n\r\n   \r\n: 只有内容\r\nbanana')
+        self.assertEqual(self._count_items(), 2)
+        self.assertFalse(Item.objects.filter(user=self.user, item='').exists())
+
+    def test_blank_only_input_writes_nothing(self):
+        """纯空白输入被表单必填校验拦下:原样重渲染,不写入任何条目。"""
+        response = self._post_input('\r\n   \r\n')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self._count_items(), 0)
+
+    def test_only_separator_lines_writes_nothing(self):
+        """只有冒号(没有条目名)时:提示并跳转,不写入条目。"""
+        response = self._post_input(':\r\n：')
+        self.assertRedirects(response, reverse('item-list'))
+        self.assertEqual(self._count_items(), 0)

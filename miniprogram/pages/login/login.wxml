@@ -1,36 +1,31 @@
 <view class="page login-page">
 
-  <view class="brand">
-    <view class="brand-title">万物皆可艾宾浩斯</view>
-    <view class="brand-sub">首次使用请用主站账号绑定，之后自动登录</view>
+  <view class="login-brand">
+    <view class="login-logo">📚</view>
+    <view class="login-title">万物皆可艾宾浩斯</view>
+    <view class="login-sub">首次使用请用主站账号绑定，之后自动登录</view>
   </view>
 
-  <view class="card">
-    <view class="form-item">
-      <view class="label">账号</view>
-      <input
-        class="input"
-        placeholder="主站用户名"
-        value="{{username}}"
-        bindinput="onUsername"
-        confirm-type="next"
-      />
-    </view>
+  <view class="login-form">
+    <input
+      class="input-lg"
+      placeholder="主站用户名"
+      value="{{username}}"
+      bindinput="onUsername"
+      confirm-type="next"
+    />
 
-    <view class="form-item">
-      <view class="label">密码</view>
-      <input
-        class="input"
-        password
-        placeholder="主站密码"
-        value="{{password}}"
-        bindinput="onPassword"
-        confirm-type="done"
-        bindconfirm="onBind"
-      />
-    </view>
+    <input
+      class="input-lg input-gap"
+      password
+      placeholder="主站密码"
+      value="{{password}}"
+      bindinput="onPassword"
+      confirm-type="done"
+      bindconfirm="onBind"
+    />
 
-    <button class="btn-primary block" bindtap="onBind" disabled="{{submitting}}" loading="{{submitting}}">
+    <button class="btn btn-lg btn-primary btn-block login-btn" bindtap="onBind" disabled="{{submitting}}" loading="{{submitting}}">
       绑定微信并登录
     </button>
 

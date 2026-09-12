@@ -1,51 +1,43 @@
-.date-bar {
+/* 顶部日期条(吸顶) */
+.review-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx 32rpx 0;
+  padding: 20rpx 32rpx 16rpx;
+  background: rgba(248, 249, 250, 0.96);
 }
 
-.date-picker {
-  color: #007bff;
+/* 日期 pill:点按弹日期选择 */
+.date-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 76rpx;
+  padding: 0 28rpx;
+  background: #ffffff;
+  border-radius: 999rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.date-pill-active {
+  background: #f1f3f5;
+}
+
+.date-text {
   font-size: 32rpx;
   font-weight: 600;
+  color: #1d809f;
 }
 
-.date-count {
-  color: #6c757d;
+.date-caret {
+  margin-left: 12rpx;
+  font-size: 24rpx;
+  color: #adb5bd;
+}
+
+.review-count {
   font-size: 26rpx;
-}
-
-.group-title {
-  margin: 32rpx 32rpx 8rpx;
-  color: #495057;
-  font-size: 28rpx;
-  font-weight: 600;
-}
-
-.list-card {
-  padding: 0 32rpx;
-}
-
-.item-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 28rpx 0;
-  border-bottom: 2rpx solid #f1f3f5;
-}
-
-.item-row:last-child {
-  border-bottom: none;
-}
-
-.item-name {
-  flex: 1;
-  margin-right: 16rpx;
-  font-size: 32rpx;
-  word-break: break-all;
-}
-
-.item-tags {
-  flex-shrink: 0;
+  color: #6c757d;
 }

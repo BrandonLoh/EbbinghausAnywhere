@@ -3,6 +3,22 @@
 {% block content %}
 {% include "includes/banner.html" %}
 
+<!-- 操作提示(录入成功 / 重复提交被忽略 等) -->
+{% if messages %}
+<div class="container pt-3">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show mb-2" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Category Statistics Section -->
 <section id="category-stats" class="py-4" style="background-color: #f8f9fa;">
     <div class="container">

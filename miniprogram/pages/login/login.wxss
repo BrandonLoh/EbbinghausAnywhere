@@ -1,39 +1,40 @@
 .login-page {
-  padding-top: 120rpx;
+  padding-bottom: 64rpx;
 }
 
-.brand {
+.login-brand {
+  padding: 96rpx 64rpx 56rpx;
   text-align: center;
-  margin-bottom: 60rpx;
 }
 
-.brand-title {
-  font-size: 46rpx;
-  font-weight: 600;
-  color: #007bff;
+.login-logo {
+  font-size: 96rpx;
+  line-height: 1;
 }
 
-.brand-sub {
+.login-title {
+  margin-top: 24rpx;
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #1d809f;
+}
+
+.login-sub {
   margin-top: 16rpx;
-  color: #6c757d;
   font-size: 26rpx;
+  color: #6c757d;
 }
 
-.form-item {
-  margin-bottom: 32rpx;
+.login-form {
+  margin: 0 40rpx;
 }
 
-.label {
-  margin-bottom: 12rpx;
-  color: #495057;
-  font-size: 28rpx;
+.input-gap {
+  margin-top: 24rpx;
 }
 
-.input {
-  border: 2rpx solid #dee2e6;
-  border-radius: 12rpx;
-  padding: 20rpx 24rpx;
-  font-size: 30rpx;
+.login-btn {
+  margin-top: 40rpx;
 }
 
 .hint {
@@ -45,7 +46,7 @@
 }
 
 .footnote {
-  margin-top: 60rpx;
+  margin-top: 48rpx;
   text-align: center;
   color: #adb5bd;
   font-size: 24rpx;

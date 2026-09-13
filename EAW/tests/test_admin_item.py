@@ -115,15 +115,17 @@ class AdminChromeTests(TestCase):
 
     @patch('EAW.admin.check_api_keys', return_value=True)
     def test_translate_button_native_sizing(self, _mock_keys):
-        """获取释义按钮不带内联尺寸,并会被并入 Save 按钮栏。"""
+        """获取释义按钮为 input[type=button],与 Save 按钮同规格,并会被并入其所在栏。"""
         html = self._html()
+        # input[type=button]:命中 .submit-row input 的定高/外边距规则,与 Save 完全一致
         self.assertIn(
-            '<button type="button" id="translate-btn" class="button">获取释义</button>',
+            '<input type="button" id="translate-btn" class="button" value="Get Translation">',
             html,
         )
         self.assertNotIn('height: auto', html)
         self.assertNotIn('padding: 5px 15px', html)
         self.assertNotIn('justify-content: flex-start', html)
+        self.assertNotIn('align-self: center', html)
         # 并栏脚本:存在 translate-row 与按 _save 定位标准按钮栏的挪动逻辑
         self.assertIn('id="translate-row"', html)
         self.assertIn('querySelector(\'.submit-row input[name="_save"]\')', html)

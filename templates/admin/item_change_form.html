@@ -54,11 +54,8 @@ $(document).ready(function () {
     {% if original and original.category.name == "单词" %}
         {% if api_status == "available" %}
         <div class="submit-row" id="translate-row">
-            {# 用 admin 原生 .button 规格,不加内联尺寸,保证与保存/删除同高对齐 #}
-            <button type="button" id="translate-btn" class="button">获取释义</button>
-            <span style="align-self: center; color: var(--body-quiet-color);">
-                支持单词及部分短语的释义和发音查询，结果将附加到当前释义字段，需手动保存
-            </span>
+            {# 用 input[type=button]:与 Save 按钮命中同一组 admin 规则(同高/同色/同字体) #}
+            <input type="button" id="translate-btn" class="button" value="Get Translation">
         </div>
         {% endif %}
     {% endif %}

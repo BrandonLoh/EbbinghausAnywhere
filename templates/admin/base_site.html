@@ -1,6 +1,12 @@
 {% extends "admin/base.html" %}
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
+{% block header %}
+    {# 与前台各页面一致的顶部图片横幅;其样式自包含(.bg-container 作用域),不影响 admin 自身样式 #}
+    {% include "includes/banner.html" %}
+    {{ block.super }}
+{% endblock %}
+
 {% block branding %}
 <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
 {% endblock %}

@@ -14,6 +14,7 @@
 
 from datetime import date, timedelta
 from unittest.mock import patch
+import re
 
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -82,7 +83,7 @@ class AdminItemSaveTests(TestCase):
 
 
 class AdminChromeTests(TestCase):
-    """后台外观:纯 admin 样式 + 返回主页链接 + 获取释义按钮用原生规格。"""
+    """后台外观:纯 admin 样式 + 返回主页链接 + 获取释义按钮用原生规格 + 前台同款横幅。"""
 
     def setUp(self):
         self.user = User.objects.create_superuser(
@@ -109,6 +110,12 @@ class AdminChromeTests(TestCase):
         """右上角保留返回主页的"View site"链接。"""
         self.assertIn('View site', self._html())
 
+    def test_frontend_banner_present(self):
+        """顶部有与前台一致的图片横幅(自包含样式,不引入 Bootstrap)。"""
+        html = self._html()
+        self.assertIn('bg-container', html)
+        self.assertIn('banner-callout.jpg', html)
+
     def test_site_header_branding(self):
         """顶栏品牌为项目名,不再是 Django administration。"""
         self.assertIn('万物皆可艾宾浩斯 · 管理后台', self._html())
@@ -122,12 +129,12 @@ class AdminChromeTests(TestCase):
             '<input type="button" id="translate-btn" class="button" value="Get Translation">',
             html,
         )
-        self.assertNotIn('height: auto', html)
-        self.assertNotIn('padding: 5px 15px', html)
-        self.assertNotIn('justify-content: flex-start', html)
-        self.assertNotIn('align-self: center', html)
+        # 按钮行自身不得带内联样式(历史问题:旧的 padding:5px 15px / height:auto)。
+        # 注意横幅 CSS 里合法含有 height:auto,所以只检查按钮行这一段。
+        m = re.search(r'<div class="submit-row" id="translate-row">.*?</div>', html, re.S)
+        self.assertIsNotNone(m, 'translate-row 区块应存在')
+        self.assertNotIn('style=', m.group(0))
         # 并栏脚本:存在 translate-row 与按 _save 定位标准按钮栏的挪动逻辑
-        self.assertIn('id="translate-row"', html)
         self.assertIn('querySelector(\'.submit-row input[name="_save"]\')', html)
 
 

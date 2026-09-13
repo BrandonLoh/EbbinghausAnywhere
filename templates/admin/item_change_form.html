@@ -53,7 +53,7 @@ $(document).ready(function () {
 {% block submit_buttons_bottom %}
     {% if original and original.category.name == "单词" %}
         {% if api_status == "available" %}
-        <div class="submit-row">
+        <div class="submit-row" id="translate-row">
             {# 用 admin 原生 .button 规格,不加内联尺寸,保证与保存/删除同高对齐 #}
             <button type="button" id="translate-btn" class="button">获取释义</button>
             <span style="align-self: center; color: var(--body-quiet-color);">
@@ -63,4 +63,23 @@ $(document).ready(function () {
         {% endif %}
     {% endif %}
     {{ block.super }}
+    {% if original and original.category.name == "单词" %}
+        {% if api_status == "available" %}
+        <script>
+            // 把「获取释义」按钮和说明文字并入下方 Save/Delete 按钮栏(同一灰色框)。
+            // 挪动 DOM 节点不影响已绑定的事件;JS 未执行时退回两行布局,功能不受影响。
+            (function () {
+                var row = document.getElementById('translate-row');
+                var saveInput = document.querySelector('.submit-row input[name="_save"]');
+                if (!row || !saveInput) return;
+                var saveRowEl = saveInput.closest('.submit-row');
+                var anchor = saveRowEl.firstChild;
+                while (row.firstChild) {
+                    saveRowEl.insertBefore(row.firstChild, anchor);
+                }
+                row.remove();
+            })();
+        </script>
+        {% endif %}
+    {% endif %}
 {% endblock %}

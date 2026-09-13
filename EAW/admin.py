@@ -19,6 +19,15 @@ from .utils import fetch_and_merge_translation
 
 logger = logging.getLogger(__name__)
 
+# 后台品牌文案(登录页/每页顶栏标题)。
+# 注意:不要在 templates/admin/base_site.html 里注入前台样式——
+# Bootstrap 的全局规则(如 border-box、body 字号)会破坏 admin 按钮的对齐规格。
+# 返回主页用 admin 自带的"View site"链接(指向 site_url="/",位于每页右上角)。
+admin.site.site_header = "万物皆可艾宾浩斯 · 管理后台"
+admin.site.site_title = "万物皆可艾宾浩斯"
+admin.site.index_title = "数据管理"
+
+
 class BaseAdmin(admin.ModelAdmin):
     """
     自定义基类Admin，用于实现普通用户只能看到自己的条目，

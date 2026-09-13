@@ -4,10 +4,7 @@ from django.contrib.auth import views as auth_views
 from .views import ItemDetailView
 from django.contrib import admin
 
-# 修改管理页面标题
-admin.site.site_header = "Ebbinghaus Anywhere"
-# 修改管理页面副标题
-admin.site.index_title = "Manage User Data"
+# 站点标题文案统一在 EAW/admin.py 里设置(site_header/site_title/index_title)
 
 urlpatterns = [
     path('', views.home, name='home'), # Home view

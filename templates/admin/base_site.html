@@ -1,11 +1,8 @@
 {% extends "admin/base.html" %}
-{% load static %}
-{% block header %}
-{% include "includes/styles.html" %}
-{% include "includes/banner.html" %}
-{% include "includes/navbar.html" %}   
-{% include "includes/scripts.html" %}   
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
 {% endblock %}
-{% block footer %}
-{% include "includes/footer.html" %}
-{% endblock %}
+
+{% block nav-global %}{% endblock %}
